@@ -1,4 +1,6 @@
 import Image from "next/image";
+import imgNearLogo from '/public/near-protocol-near-logo.png'
+import imgStartButton from '/public/start-butotn.png'
 import styles from "../styles/WelcomeCard.module.css";
 
 function WelcomeText() {
@@ -16,7 +18,7 @@ function NearCoin() {
   return (
     <div className={styles.nearcoin}>
       <Image
-        src="/../public/near-protocol-near-logo.png"
+        src={imgNearLogo}
         alt="near meerkat logo"
         width="266px"
         height="200px"
@@ -30,7 +32,7 @@ function WelcomeButton() {
     <div className={styles.card_img_container}>
       <div className={styles.card_img}>
         <Image
-          src="/../public/start-butotn.png"
+          src={imgStartButton}
           alt="near meerkat logo"
           layout="fill"
         />

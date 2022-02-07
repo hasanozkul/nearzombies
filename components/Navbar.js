@@ -1,4 +1,5 @@
 import Image from "next/image";
+import imgNearLogo from "/public/near-protocol-near-logo.png"
 import styles from "../styles/Navbar.module.css";
 
 function NavButton(props) {
@@ -13,7 +14,7 @@ function NavLogo() {
   return (
     <div className={styles.nav_logo}>
       <Image
-        src="/../public/near-protocol-near-logo.png"
+        src={imgNearLogo}
         alt="near meerkat logo"
         width="40px"
         height="30px"
