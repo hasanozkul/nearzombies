@@ -1,19 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&family=Ubuntu+Mono&family=VT323&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: none;
-  user-select: none;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
