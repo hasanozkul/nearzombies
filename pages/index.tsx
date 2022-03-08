@@ -100,8 +100,7 @@ export default function Home() {
       </svg>
       <p className="leading-relaxed text-lg">Near Protocol is a project with a very bright future. At NearZombies.io we support the expansion of the Near Protocol. We offer a fun educational experience on this platform.</p>
       <span className="inline-block h-1 w-10 rounded bg-[#5B0A91] mt-8 mb-6"></span>
-      <h2 className="text-gray-900 font-bold title-font tracking-wider text-sm">Hasan Özkül</h2>
-      <p className="text-gray-500 font-thint-">Project Manager</p>
+      <h2 className="text-gray-900 font-bold title-font tracking-wider text-sm">NearZombies.io Team</h2>
     </div>
   </div>
 </section>
@@ -176,4 +175,4 @@ export default function Home() {
 <Footer/>
 </>
   )
-  }
+}

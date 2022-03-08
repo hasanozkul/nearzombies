@@ -6,9 +6,9 @@
     "start": "next start"
   },
   "dependencies": {
+    "@heroicons/react": "^1.0.6",
     "@monaco-editor/react": "^4.3.1",
     "@ramonak/react-progress-bar": "^4.4.0",
-    "daisyui": "^1.25.4",
     "firebase": "^9.6.6",
     "gray-matter": "^4.0.3",
     "monaco-editor": "^0.32.1",

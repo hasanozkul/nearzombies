@@ -18,8 +18,7 @@ module.exports = {
         'bg-courses': "url('../public/bg-courses.png')",
         'bg-navbar': "url('../public/bg-navbar.svg')",
       }
-    },
-    
+    },    
   },
   plugins: [
 

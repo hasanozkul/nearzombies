@@ -108,9 +108,7 @@ const Footer = () => {
         </div>
         <div className="bg-[#5B0A91] outline-dashed outline-2 outline-white">
             <div className="container mx-auto py-4 px-5 flex flex-wrap flex-col sm:flex-row">
-            <p className="text-white text-sm text-center sm:text-left">© 2022 NearZombies.io —
-                <a href="https://twitter.com/" rel="noopener noreferrer" className="text-white ml-1" target="_blank">Hasan Özkul</a>
-            </p>
+            <p className="text-white text-sm text-center sm:text-left">© 2022 NearZombies.io</p>
             <span className="inline-flex sm:ml-auto sm:mt-0 mt-2 justify-center sm:justify-start">
                 <a className="text-white">
                 <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-5 h-5" viewBox="0 0 24 24">
