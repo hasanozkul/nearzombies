@@ -8,7 +8,7 @@ export default function SignIn(){
     const [signInError, setSignInError] = useState<string|null>(null);
     
     const signInAuth = async (email: string, password: string) => {
-        let errorMessage:string|null = null;
+        let errorMessage:string|null = 'Email or password is incorrect';
         setPersistence(auth, browserLocalPersistence)
         .then(() => signInWithEmailAndPassword(auth, email, password))
         .catch((error) => errorMessage = error.message);
@@ -23,7 +23,7 @@ export default function SignIn(){
     
     
     return (
-        <div className='w-[100vw] h-[100vw] sticky z-50'>
+        <div className='w-[100vw] h-[100vw] sticky z-50z'>
         <div className="lg:w-2/6 md:w-1/2 bg-gray-100 rounded-lg p-8 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
             <h2 className="text-gray-900 text-lg font-medium title-font mb-5">Sign In</h2>
             <div className="relative mb-4">
@@ -36,7 +36,7 @@ export default function SignIn(){
             </div>
     
             <button onClick={handleSignIn} className="text-white bg-gray-600 border-0 py-2 px-8 focus:outline-none hover:bg-black rounded text-lg">Sign In</button>
-            {signInError !== null && <p className="text-xs text-gray-500 mt-3">{signInError}</p>}
+            {signInError !== null && <p onClick={handleSignIn} className=" mt-4 text-white bg-red-500 border-0 py-2 px-8 focus:outline-none rounded text-lg text-center">{signInError}</p>}
         </div>
         </div>
     )

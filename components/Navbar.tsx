@@ -14,7 +14,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
-import Sign from './LoginHandler'
+import LoginHandler from './LoginHandler'
 
 
 
@@ -25,7 +25,7 @@ const Navbar = () => {
       <div className="container mx-auto flex flex-col flex-wrap items-center p-5 md:flex-row">
         <a className="title-font mb-4 flex items-center font-medium text-gray-900 md:mb-0">
           <Link href="/">
-            <div className="flex items-center">
+            <div className="flex items-center cursor-pointer">
               <Image alt="logo" src="/nearzombiehead.png" height={60} width={60}/>
               <span className="ml-3 text-xl text-white">NearZombies</span>
             </div>
@@ -40,7 +40,7 @@ const Navbar = () => {
           </Link>
           */}
         </div>
-        <Sign />
+        <LoginHandler/>
       </div>
     </header>
   )

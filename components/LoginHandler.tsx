@@ -85,6 +85,7 @@ export default function LoginHandler() {
 
   if (!loggedIn) {
     return <>
+    
       <Button onClick={handleSignClick}>Sign In</Button>
       <Button onClick={handleRegisterClick}>Register</Button>
       {show.sign && <SignIn />}

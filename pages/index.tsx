@@ -13,7 +13,6 @@ import { onAuthStateChanged, User } from 'firebase/auth'
 const database = getDatabase();
 
 
-//temp
 
 export default function Home() {
   const [zombieProps, setZombieProps] = useState({hat: 0, eyes: 0, top: 0, bottom: 0, skin: 0, background: 0});
@@ -34,7 +33,7 @@ export default function Home() {
         });
       }
     })
-  }, []);
+  });
 
   /* send firebase information if user clicks the 'start now' button */
   const pushZombieProps = () => {
