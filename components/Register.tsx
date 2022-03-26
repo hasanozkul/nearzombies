@@ -1,7 +1,7 @@
 import { onAuthStateChanged, sendEmailVerification, setPersistence, browserLocalPersistence, createUserWithEmailAndPassword } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { useState } from "react";
-import { auth } from "./firebase-config";
+import { auth } from "../firebase/config";
 
 export default function Register (){
     const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ export default function Register (){
     const pushReferralToFirebase = (referral: string) => {
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          const pathRef = ref(database, "user/" + user.uid + "/referral");
+          const pathRef = ref(database, "users/" + user.uid + "/referral");
           set(pathRef, referral);
         }
       })

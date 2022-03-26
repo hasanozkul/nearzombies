@@ -1,6 +1,6 @@
 import { setPersistence, browserLocalPersistence, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { auth } from "./firebase-config";
+import { auth } from "../firebase/config";
 
 export default function SignIn(){
     const [email, setEmail] = useState('');

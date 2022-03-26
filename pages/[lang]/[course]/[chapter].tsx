@@ -1,0 +1,207 @@
+import Head from 'next/head'
+import Navbar from '../../../components/Navbar'
+import Footer from '../../../components/Footer'
+import Image from 'next/image'
+import CodeEditor from '../../../components/CodeEditor'
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import iCustomCharacter from '/public/images/character_build/skin/skin_1.png'
+import { useRouter } from 'next/router'
+import next, { GetStaticPaths } from 'next'
+import Confetti from 'react-confetti'
+import { useWindowSize } from 'react-use'
+import { ref, getDatabase, get, child, onValue } from 'firebase/database'
+
+function Markdown() {
+  return <section className="body-font text-gray-600"></section>
+}
+
+function getChapterData() {
+  const [data, setData] = useState<any>('')
+  const [isLoading, setLoading] = useState(false)
+  let chapterData: string[] = []
+  const router = useRouter()
+  const { lang, course, chapter } = router.query
+
+  const dbRef = ref(getDatabase())
+
+  useEffect(() => {
+    setLoading(true)
+
+    async function test() {
+      await get(
+        child(dbRef, 'courses/' + lang + '/' + course + '/' + chapter + '/')
+      )
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            setData(snapshot.val())
+
+            //console.log('data');
+          } else {
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+      setLoading(false)
+    }
+    test().then((x) => console.log(x))
+    // works but how?
+  }, [router])
+
+  //console.log( data);
+
+  if (isLoading) return 'loading'
+  //if (!data) console.log('wfTTTTTTT')
+
+  return data
+}
+
+const Chapter = () => {
+  const chapterData = getChapterData()
+  console.log(chapterData.title)
+
+  const [showCongrats, setShowCongrats] = useState(false)
+
+  const handleClickClose = () => {
+    setShowCongrats(false)
+  }
+
+  const router = useRouter()
+  const { courseRoute, chapterRoute } = router.query
+
+  const lastChapter = 10
+  const route = useRouter().asPath.substring(1).split(/[-/]/)
+  const currChapter: string = route[3]
+  const currCourse: string = route[1]
+  const nextChapter = +route[3] + 1
+  const nextRoute =
+    '/' + route[0] + '-' + route[1] + '/' + route[2] + '-' + nextChapter
+  const { width, height } = useWindowSize()
+
+  return (
+    <>
+      <Navbar />
+
+      <section id="content" className="body-font mb-20 text-gray-600">
+        <div className=" mx-full py">
+          <div className="m-4 flex place-content-center">
+            <div className="ml-10 w-full md:w-1/2">
+              <div className="h-full rounded-[50px] bg-gray-100 p-8">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  className="mb-4 block h-5 w-5 text-gray-400"
+                  viewBox="0 0 975.036 975.036"
+                >
+                  <path d="M925.036 57.197h-304c-27.6 0-50 22.4-50 50v304c0 27.601 22.4 50 50 50h145.5c-1.9 79.601-20.4 143.3-55.4 191.2-27.6 37.8-69.399 69.1-125.3 93.8-25.7 11.3-36.8 41.7-24.8 67.101l36 76c11.6 24.399 40.3 35.1 65.1 24.399 66.2-28.6 122.101-64.8 167.7-108.8 55.601-53.7 93.7-114.3 114.3-181.9 20.601-67.6 30.9-159.8 30.9-276.8v-239c0-27.599-22.401-50-50-50zM106.036 913.497c65.4-28.5 121-64.699 166.9-108.6 56.1-53.7 94.4-114.1 115-181.2 20.6-67.1 30.899-159.6 30.899-277.5v-239c0-27.6-22.399-50-50-50h-304c-27.6 0-50 22.4-50 50v304c0 27.601 22.4 50 50 50h145.5c-1.9 79.601-20.4 143.3-55.4 191.2-27.6 37.8-69.4 69.1-125.3 93.8-25.7 11.3-36.8 41.7-24.8 67.101l35.9 75.8c11.601 24.399 40.501 35.2 65.301 24.399z"></path>
+                </svg>
+                <h1 className="text-3xl text-black">{chapterData.title}</h1>
+
+                <h2 className="text-xl">{chapterData.author}</h2>
+                <br />
+                <div />
+                {chapterData.content}
+              </div>
+            </div>
+
+            <div className="ml-10 w-full md:w-1/2">
+              <Markdown />
+              {/* TODO: Add dynamic links */}
+              <CodeEditor
+                showCongrats={setShowCongrats}
+                course={currCourse}
+                chapter={currChapter}
+                lang="typescript"
+                value={chapterData.given_code}
+                expectedValue={chapterData.expected_code}
+              />
+            </div>
+
+            {showCongrats && (
+              <>
+                <Confetti width={width} height={height} />
+                <div
+                  id="defaultModal"
+                  aria-hidden="true"
+                  className="h-modal fixed right-0 left-0 top-4 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full"
+                >
+                  <div className="relative m-auto h-full w-full max-w-2xl px-4 md:h-auto">
+                    {/* <!-- Modal content --> */}
+                    <div className="relative rounded-lg bg-white shadow">
+                      {/* <!-- Modal header --> */}
+                      <div className="flex items-start justify-between rounded-t border-b p-5">
+                        <h3 className="text-xl font-semibold text-gray-900 lg:text-2xl">
+                          Congrats
+                        </h3>
+                        <button
+                          onClick={handleClickClose}
+                          type="button"
+                          className="ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900"
+                          data-modal-toggle="defaultModal"
+                        >
+                          <svg
+                            className="h-5 w-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              clip-rule="evenodd"
+                            ></path>
+                          </svg>
+                        </button>
+                      </div>
+                      {/* <!-- Modal body --> */}
+                      <div className="grid grid-cols-2 space-y-6 p-6">
+                        <div className="px-4">
+                          <div className="relative overflow-hidden rounded-lg bg-bone-frame bg-contain bg-center bg-no-repeat px-8 pt-16 pb-24 text-center">
+                            <h1 className="title-font mb-30 text-xl font-medium text-gray-900 sm:text-2xl">
+                              Character
+                            </h1>
+                            <Image src={iCustomCharacter} />
+                          </div>
+                        </div>
+                        <div className="text-justify">
+                          Lorem ipsum dolor sit amet, consectetur adipiscing
+                          elit. Proin sagittis efficitur eros, ut porttitor eros
+                          ullamcorper eget. Duis vitae tempus erat, a faucibus
+                          sapien. Nunc magna purus, cursus vitae lectus sed,
+                          ultricies rutrum nunc. Quisque rhoncus, sapien nec
+                          interdum semper, massa nisl accumsan tortor, vitae
+                          egestas tellus mi in enim. Maecenas placerat ac nunc
+                          non bibendum. Maecenas feugiat neque at arcu faucibus
+                          efficitur nec eu nisi. Quisque non luctus enim.
+                          Maecenas feugiat neque at arcu faucibus efficitur nec
+                          eu nisi. Quisque non luctus enim. Maecenas feugiat
+                          neque at arcu faucibus efficitur nec eu nisi. Quisque
+                          non luctus enim. Maecenas feugiat neque at arcu
+                          faucibus efficitur nec eu nisi. Quisque non luctus
+                          enim.
+                        </div>
+                      </div>
+                      {/* <!-- Modal footer --> */}
+                      <div className="grid items-center space-x-2 rounded-b border-t border-gray-200 p-6 ">
+                        <button
+                          onClick={() => router.push(nextRoute)}
+                          className="rounded bg-gray-500 py-2 px-20 text-lg text-white hover:bg-gray-700 focus:outline-none"
+                        >
+                          Next Course
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+      <div className=" mt-10 h-32 bg-bg-footer bg-cover bg-bottom bg-no-repeat" />
+      <Footer />
+    </>
+  )
+}
+export default Chapter

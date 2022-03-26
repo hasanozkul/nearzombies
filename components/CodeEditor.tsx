@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Editor, { DiffEditor } from '@monaco-editor/react'
 import * as monaco from 'monaco-editor';
-import { auth } from './firebase-config';
+import { auth } from '../firebase/config';
 import { ref, get, getDatabase, set } from 'firebase/database';
 import { onAuthStateChanged } from 'firebase/auth';
 import Router, { useRouter } from 'next/router';
@@ -58,7 +58,7 @@ function CodeEditor(props: any) {
     if (user) {
       const pathRef = ref(database, "users/" + user.uid + "/save/course-" + props.course + "/chapter-" + props.chapter);
       set(pathRef, true);
-      const lastRef = ref(database, "users/" + user.uid + "/save/course-" + props.course + "/last-chapter");
+      const lastRef = ref(database, "users/" + user.uid + "/save/course_" + props.course + "/last-chapter");
       set(lastRef, parseInt(props.chapter));
     }
   }

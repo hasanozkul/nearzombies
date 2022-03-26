@@ -22,12 +22,12 @@ import LoginHandler from './LoginHandler'
 const Navbar = () => {
   return (
     <header className="bg-bg-navbar bg-no-repeat bg-cover body-font h-[11vh] text-gray-600 ">
-      <div className="container mx-auto flex flex-col flex-wrap items-center p-5 md:flex-row">
+      <div className="container mx-auto flex flex-col flex-wrap items-start md:flex-row py-6">
         <a className="title-font mb-4 flex items-center font-medium text-gray-900 md:mb-0">
           <Link href="/">
             <div className="flex items-center cursor-pointer">
-              <Image alt="logo" src="/nearzombiehead.png" height={60} width={60}/>
-              <span className="ml-3 text-xl text-white">NearZombies</span>
+              <Image alt="logo" src="/images/nav_logo.png" height={122} width={213}/>
+              <span className="ml-3 text-xl text-white"></span>
             </div>
           </Link>
         </a>

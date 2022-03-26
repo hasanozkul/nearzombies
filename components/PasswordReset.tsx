@@ -1,7 +1,7 @@
 import {
     RefreshIcon
     } from '@heroicons/react/outline'
-import { auth } from './firebase-config';
+import { auth } from '../firebase/config';
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 
