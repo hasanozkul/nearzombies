@@ -4,10 +4,10 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-        extend: {
-          colors: {
-            'primary':'#5B0A91'
-          },
+    extend: {
+      colors: {
+        primary: '#5B0A91',
+      },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
       },
@@ -22,6 +22,23 @@ module.exports = {
         'bg-navbar': "url('../public/images/bg-navbar.svg')",
       },
     },
+  },
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          primary: '#5B0A91',
+          secondary: '#D926A9',
+          accent: '#1FB2A6',
+          neutral: '#191D24',
+          'base-100': '#d1d5db',
+          info: '#3ABFF8',
+          success: '#36D399',
+          warning: '#FBBD23',
+          error: '#F87272',
+        },
+      },
+    ],
   },
   plugins: [require('daisyui')],
 }

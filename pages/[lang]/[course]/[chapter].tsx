@@ -108,14 +108,16 @@ const Chapter = () => {
             <div className="ml-10 w-full md:w-1/2">
               <Markdown />
               {/* TODO: Add dynamic links */}
-              <CodeEditor
-                showCongrats={setShowCongrats}
-                course={currCourse}
-                chapter={currChapter}
-                lang="typescript"
-                value={chapterData.given_code}
-                expectedValue={chapterData.expected_code}
-              />
+              {chapterData.expected_code && (
+                <CodeEditor
+                  showCongrats={setShowCongrats}
+                  course={currCourse}
+                  chapter={currChapter}
+                  lang="typescript"
+                  value={chapterData.given_code}
+                  expectedValue={chapterData.expected_code}
+                />
+              )}
             </div>
 
             {showCongrats && (
