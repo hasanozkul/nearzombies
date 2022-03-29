@@ -25,7 +25,7 @@ export default function SignIn() {
   }
 
   return (
-    <div className="z-50z sticky w-[100vw]">
+    <div className="sticky z-50 w-[100vw]">
       <div className="mt-10 flex w-full flex-col rounded-lg bg-gray-100 p-8 md:ml-auto md:mt-0 md:w-1/2 lg:w-2/6">
         <h2 className="title-font mb-5 text-lg font-medium text-gray-900">
           Sign In

@@ -30,7 +30,7 @@ function getChapterData() {
 
     async function test() {
       await get(
-        child(dbRef, 'courses/' + lang + '/' + course + '/' + chapter + '/')
+        child(dbRef, 'courses/' + lang + '/' + course + '/chapters/' + chapter + '/')
       )
         .then((snapshot) => {
           if (snapshot.exists()) {
@@ -58,8 +58,10 @@ function getChapterData() {
 }
 
 const Chapter = () => {
+  useEffect(() => {
+
+  })
   const chapterData = getChapterData()
-  console.log(chapterData.title)
 
   const [showCongrats, setShowCongrats] = useState(false)
 
@@ -67,16 +69,22 @@ const Chapter = () => {
     setShowCongrats(false)
   }
 
-  const router = useRouter()
-  const { courseRoute, chapterRoute } = router.query
+  const handleNextRoute = () => {
+    router.push(nextRoute)
+    setShowCongrats(false)
+  }
 
-  const lastChapter = 10
-  const route = useRouter().asPath.substring(1).split(/[-/]/)
-  const currChapter: string = route[3]
-  const currCourse: string = route[1]
-  const nextChapter = +route[3] + 1
-  const nextRoute =
-    '/' + route[0] + '-' + route[1] + '/' + route[2] + '-' + nextChapter
+  
+
+  const router = useRouter()
+  const [ currLang, currCourse, currChapter ] = useRouter().asPath.substring(1).split(/[/]/)
+  
+  const chapterNum = Number(currChapter.replace(/\D/g, '')) + 1
+  const nextChapter = "chapter_"  + chapterNum
+  
+  
+ 
+  const nextRoute = "/" + currLang + "/" + currCourse + "/" + nextChapter
   const { width, height } = useWindowSize()
 
   return (
@@ -187,7 +195,7 @@ const Chapter = () => {
                       {/* <!-- Modal footer --> */}
                       <div className="grid items-center space-x-2 rounded-b border-t border-gray-200 p-6 ">
                         <button
-                          onClick={() => router.push(nextRoute)}
+                          onClick={handleNextRoute}
                           className="rounded bg-gray-500 py-2 px-20 text-lg text-white hover:bg-gray-700 focus:outline-none"
                         >
                           Next Course

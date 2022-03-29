@@ -28,13 +28,14 @@ export default function Home() {
 
   const [completions, setCompletions] = useState([0, 0, 0, 0, 0])
 
+/* A callback function that will be called when the user sign in or sign out. */
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       for (let i = 0; i < completions.length; i++) {
         if (user) {
           const pathRef = ref(
             database,
-            'users/' + user.uid + '/save/course-' + (i + 1) + '/last-chapter'
+            'users/' + user.uid + '/save/course_' + (i + 1) + '/last_chapter'
           )
           get(pathRef).then((snapshot) => {
             setCompletions((prev) => {
@@ -88,15 +89,8 @@ export default function Home() {
                       <p className="text-justify leading-relaxed">
                         {descriptions[i].substring(0, 100) + '...'}
                       </p>
-                      <ProgressBar
-                        className="my-2"
-                        height=".5em"
-                        bgColor="#6b7280"
-                        baseBgColor="#9ca3af"
-                        completed={completions[i]}
-                        maxCompleted={10}
-                        isLabelVisible={false}
-                      />
+
+                      <progress className="progress progress-primary my-2" value={completions[i]} max="5"></progress>
                     </div>
                   </div>
                 ))}

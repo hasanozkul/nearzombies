@@ -52,6 +52,7 @@ export const getStaticProps = async () => {
 }
 
 const Home = ({ courses }: any) => {
+  /* A way to set the initial state of the chapter data. */
   const [chapterData, setChapterData] = useState({
     language: 'EN',
     course: 'course_1',
@@ -68,9 +69,10 @@ const Home = ({ courses }: any) => {
   const langList = Object.keys(courses)
   const courseList = Object.keys(courses[chapterData.language])
   const chapterList = Object.keys(
-    courses[chapterData.language][chapterData.course]
+    courses[chapterData.language][chapterData.course]['chapters']
   )
 
+  /* A way to set the initial state of the chapter data. */
   useEffect(() => {
     if (chapterData.chapter == 'New Chapter') {
       // update chapter number !!
@@ -92,7 +94,9 @@ const Home = ({ courses }: any) => {
       )
     } else {
       const temp =
-        courses[chapterData.language][chapterData.course][chapterData.chapter]
+        courses[chapterData.language][chapterData.course]['chapters'][
+          chapterData.chapter
+        ]
       const temp2 = Object.assign(
         temp,
         { language: chapterData.language },
@@ -103,41 +107,53 @@ const Home = ({ courses }: any) => {
     }
   }, [chapterData.chapter])
 
+  /**
+   * It takes an event and sets the chapterData object to the value of the event's target.name property
+   * @param {any} event - The event that triggered the function.
+   */
   const handleChange = (event: any) => {
     setChapterData({ ...chapterData, [event.target.name]: event.target.value })
   }
 
+  /**
+   * It takes the form data and stores it in the database
+   * @param {any} event - The event that was triggered.
+   */
   const handleSubmit = (event: any) => {
     event.preventDefault()
+
+/* Checking if the chapter is new. If it is new, it will set the chapter number to the length of the
+chapter list plus 1. */
+    let chapterID = chapterData.chapter
     if (chapterData.chapter == 'New Chapter') {
-      const temp = chapterList
-      console.log(chapterList)
-      //const chapterInfo = {title:chapterData.title, author:chapterData.author, date:chapterData.date, reward:chapterData.coin_reward, content:chapterData.content, expected_code:chapterData.expected_code, givencode:chapterData.given_code}
-      //const pathRef =  ref( db, 'courses/'+chapterData.language +'/'+ chapterData.course +'/'+ chapterData.chapter)
-      //set(pathRef, chapterInfo)
-    } else {
-      const chapterInfo = {
-        title: chapterData.title,
-        author: chapterData.author,
-        date: chapterData.date,
-        reward: chapterData.coin_reward,
-        content: chapterData.content,
-        expected_code: chapterData.expected_code,
-        givencode: chapterData.given_code,
-      }
-      const pathRef = ref(
-        db,
-        'courses/' +
-          chapterData.language +
-          '/' +
-          chapterData.course +
-          '/' +
-          chapterData.chapter
-      )
-      set(pathRef, chapterInfo)
+      chapterID = 'chapter_' + (chapterList.length + 1).toString()
     }
+    console.log(chapterID)
+    const chapterInfo = {
+      title: chapterData.title,
+      author: chapterData.author,
+      date: chapterData.date,
+      reward: chapterData.coin_reward,
+      content: chapterData.content,
+      expected_code: chapterData.expected_code,
+      given_code: chapterData.given_code,
+    }
+    const pathRef = ref(
+      db,
+      'courses/' +
+        chapterData.language +
+        '/' +
+        chapterData.course +
+        '/chapters/' +
+        chapterID
+    )
+    set(pathRef, chapterInfo)
   }
 
+  /**
+   * It takes the chapter data and deletes the chapter from the database
+   * @param {any} event - The event that triggered the function.
+   */
   const handleDeleteUser = (event: any) => {
     const pathRef = ref(
       db,
@@ -145,7 +161,7 @@ const Home = ({ courses }: any) => {
         chapterData.language +
         '/' +
         chapterData.course +
-        '/' +
+        '/chapters/' +
         chapterData.chapter
     )
     remove(pathRef).then(() => {

@@ -20,6 +20,7 @@ type ZombieProps = {
 }
 
 export default function Home() {
+
   const [zombieProps, setZombieProps] = useState({
     hat: 1,
     eyes: 1,
@@ -29,7 +30,7 @@ export default function Home() {
     background: 1,
   })
 
-  /* fetch zombie properties from firebase only once */
+/* fetch zombie properties from firebase only once */
   useEffect(() => {
     if (!auth.currentUser) {
       readFromLocalStorage()
@@ -46,6 +47,7 @@ export default function Home() {
     })
   }, [])
 
+/* Reads the zombieProps from localStorage and sets the zombieProps state*/
   const readFromLocalStorage = () => {
     var zombiePropsStorage = JSON.parse(
       localStorage.getItem('zombieProps') || ''
