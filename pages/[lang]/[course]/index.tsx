@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react'
 import { auth } from '../../../firebase/config'
 import { getDatabase, get, ref } from 'firebase/database'
 import { onAuthStateChanged } from 'firebase/auth'
-import ProgressBar from '@ramonak/react-progress-bar'
 import Character from '../../../components/character_build/Character'
 const database = getDatabase()
 
@@ -16,15 +15,11 @@ export default function Home() {
     'Course 1',
     'Course 2',
     'Course 3',
-    'Course 4',
-    'Course 5',
   ])
   const [descriptions, setDescriptions] = useState([
     'Desc 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit',
     'Desc 2. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit',
     'Desc 3. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-    'Desc 4. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-    'Desc 5. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit',
   ])
 
   const [completions, setCompletions] = useState([0, 0, 0, 0, 0])
@@ -133,7 +128,7 @@ export default function Home() {
                     '/EN/course_' +
                     (descIdx + 1) +
                     '/chapter_' +
-                    (completions[descIdx] + 1)
+                    (Number(completions[descIdx]) + 1)
                   }
                 >
                   <button className="itmes-center inline-flex bg-bone-button bg-contain bg-center bg-no-repeat py-4 px-20 text-lg text-black  transition focus:translate-y-1 ">

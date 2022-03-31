@@ -1,31 +1,83 @@
+/*
+| Firebase remainingLife
+|--- Users' remaining life information should be retrieved from firebase and saved in firebase.
+|
+| Editor Reset Button
+|--- The reset button should make the editor revert to its original state
+|
+| User Passed Chapter
+|---  Users should be able to see the correct answers to the chapters if they have already passed the chapter.
+|
+|
+*/
+
 import React, { useEffect, useRef, useState } from 'react'
 import Editor, { DiffEditor } from '@monaco-editor/react'
 import * as monaco from 'monaco-editor'
 import { auth } from '../firebase/config'
-import { ref, get, getDatabase, set } from 'firebase/database'
-import { onAuthStateChanged } from 'firebase/auth'
+import { ref, get, getDatabase, set, onValue } from 'firebase/database'
 import Router, { useRouter } from 'next/router'
-import { ToastContainer, toast } from 'react-toastify'
 import useWindowSize from 'react-use/lib/useWindowSize'
+import { HeartIcon } from '@heroicons/react/solid'
+import {
+  XCircleIcon,
+  CheckCircleIcon,
+  UsersIcon,
+} from '@heroicons/react/outline'
+
 const database = getDatabase()
 
 function CodeEditor(props: any) {
   const router = useRouter()
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
   const diffEditorRef = useRef<monaco.editor.IStandaloneDiffEditor | null>(null)
-  const [submitErr, setSubmitErr] = useState(false)
+  const [showError, setShowError] = useState(false)
   const [openDiff, setOpenDiff] = useState(false)
   const { width, height } = useWindowSize()
+  const [remainingLife, setRemainingLife] = useState<Number>(3)
+  const [showAnswer, setShowAnswer] = useState<boolean>(false)
+  const [showSuccess, setShowSuccess] = useState<boolean>(false)
+  const [resetCode, setResetCode] = useState<boolean>(false)
+  const [userTotalCoin, setUserTotalCoin] = useState<number>(0)
 
+  /* It's a function that shows an error message when the user submit the code and it's wrong. */
   const SubmitErr = () => {
+    {
+      /**
     setTimeout(() => {
-      setSubmitErr(false)
+      setShowError(false)
     }, 2500)
+ */
+    }
 
     return (
-      <div className="text-red text-bold inline-flex rounded border-4 border-red-700 bg-red-50 px-20 pt-1 text-lg hover:bg-gray-200 focus:outline-none">
-        Invalid Try Again
+      <div className="alert alert-error mt-4 place-content-center shadow-lg">
+        <div>
+          <XCircleIcon className="w-8" />
+          <span>Upps... Something went wrong </span>
+        </div>
       </div>
+    )
+  }
+  const ShowSuccess = () => {
+    return (
+      <div className="alert mt-4 place-content-center bg-emerald-600 text-xl text-white shadow-lg">
+        <div>
+          <CheckCircleIcon className="w-10" />
+          <span>Great job</span>
+        </div>
+      </div>
+    )
+  }
+
+  const showAnswerButton = () => {
+    return (
+      <button
+        onClick={handleShowAnswerClick}
+        className="mr-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-500 py-2 text-lg text-white hover:bg-gray-600 focus:outline-none"
+      >
+        Show Answer
+      </button>
     )
   }
 
@@ -59,25 +111,36 @@ function CodeEditor(props: any) {
     }
   }
 
-  function sendTrueDataToFirebase() {
+  function sendSaveDataToFirebase() {
     const user = auth.currentUser
     if (user) {
-      const pathRef = ref(
+      const userChapterSavePath = ref(
         database,
-        'users/' +
-          user.uid +
-          '/save/' +
-          props.course +
-          '/' +
-          props.chapter
+        'users/' + user.uid + '/save/' + props.course + '/' + props.chapter
       )
-      console.log(props.chapter.replace(/\D/g, ''))
-      set(pathRef, true)
-      const lastRef = ref(
-        database,
-        'users/' + user.uid + '/save/' + props.course + '/last_chapter'
-      )
-      set(lastRef, props.chapter.replace(/\D/g, ''))
+      const userCoinPath = ref(database, 'users/' + user.uid + '/coin/')
+
+      get(userCoinPath)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            // wont update !!
+            setUserTotalCoin(snapshot.val())
+          }
+        })
+        .then(() => {
+          if (remainingLife > 0) {
+            set(userChapterSavePath, 'completed')
+            // change with chpater reward
+            set(userCoinPath, userTotalCoin + 10)
+          } else {
+            set(userChapterSavePath, 'answer_shown')
+          }
+          const lastRef = ref(
+            database,
+            'users/' + user.uid + '/save/' + props.course + '/last_chapter'
+          )
+          set(lastRef, props.chapter.replace(/\D/g, ''))
+        })
     }
   }
 
@@ -95,18 +158,39 @@ function CodeEditor(props: any) {
     expected = expected.replace(regex, '')
 
     if (value === expected) {
-      console.log(
-        'Finished course-' + props.course + ', chapter-' + props.chapter
-      )
-      sendTrueDataToFirebase()
+      setShowError(false)
+      setShowSuccess(true)
+      sendSaveDataToFirebase()
       props.showCongrats(true)
     } else {
-      setSubmitErr(true)
+      setShowError(true)
+      if (remainingLife > 0) {
+        // get life count from firebase and decrease
+        setRemainingLife(Number(remainingLife) - 1)
+      }
+      if (remainingLife <= 1) {
+        setShowAnswer(true)
+      }
     }
   }
 
   function handleShowAnswerClick() {
     setOpenDiff(!openDiff)
+  }
+
+  function showRemainingLife() {
+    return (
+      <div className="mr-4 inline-flex w-1/12 place-content-center items-center rounded-xl bg-gray-200 py-2 text-xl">
+        <HeartIcon className="w-10 text-red-500" />
+        <div className="ml-1 w-2">
+          <a>{remainingLife}</a>
+        </div>
+      </div>
+    )
+  }
+
+  function handleResetCode() {
+    return null
   }
 
   return (
@@ -132,20 +216,31 @@ function CodeEditor(props: any) {
       </div>
 
       <div className="mt-5 flex">
-        <button
-          onClick={handleSubmitClick}
-          className="mr-auto inline-flex rounded bg-gray-500 py-2 px-20 text-lg text-white hover:bg-gray-700 focus:outline-none"
-        >
-          Submit
-        </button>
-        {submitErr && <SubmitErr />}
-        <button
-          onClick={handleShowAnswerClick}
-          className="ml-auto inline-flex rounded bg-gray-500 py-2 px-20 text-lg text-white hover:bg-gray-700 focus:outline-none"
-        >
-          Show Answer
-        </button>
+        <div className="flex flex-grow flex-wrap">
+          {showRemainingLife()}
+          <button
+            onClick={handleSubmitClick}
+            className="mr-auto inline-flex w-1/3 place-content-center items-center rounded-xl bg-emerald-600 py-2 text-lg text-white hover:bg-emerald-700 focus:outline-none"
+          >
+            Submit
+          </button>
+
+          <button
+            onClick={handleResetCode}
+            className="mr-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-200 py-2 text-lg text-gray-500 hover:bg-gray-300 focus:outline-none"
+          >
+            Reset
+          </button>
+
+          {showAnswer ? (
+            showAnswerButton()
+          ) : (
+            <div className="place-content-centerpy-2 mr-auto inline-flex w-1/4 " />
+          )}
+        </div>
       </div>
+      {showSuccess && <ShowSuccess />}
+      {showError && <SubmitErr />}
     </div>
   )
 }
