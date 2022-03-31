@@ -4,29 +4,47 @@ import {
   signInWithEmailAndPassword,
 } from 'firebase/auth'
 import { useState } from 'react'
-import { auth } from '../firebase/config'
+import { auth } from '../../firebase/config'
 
 export default function SignIn() {
   const [email, setEmail] = useState('')
   const [passwd, setPasswd] = useState('')
   const [signInError, setSignInError] = useState<string | null>(null)
-
+  const [isLoading, setIsLoading] = useState(false)
   const signInAuth = async (email: string, password: string) => {
-    let errorMessage: string | null = 'Email or password is incorrect'
+    if (!email || !password) {
+      setSignInError('Email and password required!')
+      setIsLoading(false)
+      return
+    }
     setPersistence(auth, browserLocalPersistence)
-      .then(() => signInWithEmailAndPassword(auth, email, password))
-      .catch((error) => (errorMessage = error.message))
-
-    return errorMessage
+      .then(() => {
+        signInWithEmailAndPassword(auth, email, password)
+          .catch((error) => {
+            console.log(error)
+            if (error.message === 'Firebase: Error (auth/wrong-password).')
+              setSignInError('Email or password is incorrect!')
+            else if ((error.message = 'Firebase: Error (auth/user-not-found).'))
+              setSignInError('User not found!')
+            else setSignInError(error.message)
+            setIsLoading(false)
+          })
+          .then(() => setIsLoading(false))
+      })
+      .catch((error) => {
+        setSignInError(error.message)
+        setIsLoading(false)
+      })
   }
 
   const handleSignIn = async () => {
-    setSignInError(await signInAuth(email, passwd))
+    setIsLoading(true)
+    await signInAuth(email, passwd)
   }
 
   return (
-    <div className="sticky z-50 w-[100vw]">
-      <div className="mt-10 flex w-full flex-col rounded-lg bg-gray-100 p-8 md:ml-auto md:mt-0 md:w-1/2 lg:w-2/6">
+    <div className="sticky z-50 w-[90vw]  animate-withClipPath sm:w-[100vw] md:-mt-16">
+      <div className="mt-5 flex w-full flex-col rounded-lg bg-gray-100 p-8 md:ml-auto md:mt-0 md:w-1/2 lg:w-2/6">
         <h2 className="title-font mb-5 text-lg font-medium text-gray-900">
           Sign In
         </h2>
@@ -58,16 +76,14 @@ export default function SignIn() {
         </div>
 
         <button
+          disabled={isLoading}
           onClick={handleSignIn}
-          className="rounded border-0 bg-gray-600 py-2 px-8 text-lg text-white hover:bg-black focus:outline-none"
+          className="cursor-pointer rounded  border-0 bg-gray-600 py-2 px-8 text-lg text-white duration-200 hover:bg-black/90 focus:outline-none disabled:cursor-wait disabled:opacity-70 "
         >
           Sign In
         </button>
         {signInError !== null && (
-          <p
-            onClick={handleSignIn}
-            className=" mt-4 rounded border-0 bg-red-500 py-2 px-8 text-center text-lg text-white focus:outline-none"
-          >
+          <p className=" mt-4 rounded border-0 bg-red-500 py-2 px-8 text-center text-lg text-white focus:outline-none">
             {signInError}
           </p>
         )}

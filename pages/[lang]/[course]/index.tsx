@@ -1,5 +1,5 @@
-import Navbar from '../../../components/Navbar'
-import Footer from '../../../components/Footer'
+import Navbar from '../../../components/navbar/Navbar'
+import Footer from '../../../components/footer/Footer'
 import Image from 'next/image'
 import iCrossBone from '/public/images/cross-bone.png'
 import Link from 'next/link'
@@ -8,6 +8,7 @@ import { auth } from '../../../firebase/config'
 import { getDatabase, get, ref } from 'firebase/database'
 import { onAuthStateChanged } from 'firebase/auth'
 import ProgressBar from '@ramonak/react-progress-bar'
+import Character from '../../../components/character_build/Character'
 const database = getDatabase()
 
 export default function Home() {
@@ -19,16 +20,24 @@ export default function Home() {
     'Course 5',
   ])
   const [descriptions, setDescriptions] = useState([
-    'Desc 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed egestas magna augue, et luctus est placerat eget. In eu odio eu sapien tincidunt interdum. Praesent tortor nisl, accumsan et laoreet ut, blandit ut arcu. Praesent blandit ut diam a semper. Aenean vitae ultrices purus. Nulla consectetur risus ullamcorper nibh iaculis faucibus. Ut felis dui, ultricies sed varius dictum, ullamcorper nec diam. Phasellus ornare non eros sed dignissim. Nulla eget sollicitudin nisi, et dignissim quam. Aliquam erat volutpat. Morbi scelerisque sem pellentesque est semper tempor. In volutpat lorem id lacus facilisis, vitae accumsan ligula dictum. Nullam vel nisl nisl. Vestibulum turpis lectus, dictum id lectus ut, finibus interdum tellus. Proin a magna arcu.',
-    'Desc 2. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed egestas magna augue, et luctus est placerat eget. In eu odio eu sapien tincidunt interdum. Praesent tortor nisl, accumsan et laoreet ut, blandit ut arcu. Praesent blandit ut diam a semper. Aenean vitae ultrices purus. Nulla consectetur risus ullamcorper nibh iaculis faucibus. Ut felis dui, ultricies sed varius dictum, ullamcorper nec diam. Phasellus ornare non eros sed dignissim. Nulla eget sollicitudin nisi, et dignissim quam. Aliquam erat volutpat. Morbi scelerisque sem pellentesque est semper tempor. In volutpat lorem id lacus facilisis, vitae accumsan ligula dictum. Nullam vel nisl nisl. Vestibulum turpis lectus, dictum id lectus ut, finibus interdum tellus. Proin a magna arcu.',
-    'Desc 3. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed egestas magna augue, et luctus est placerat eget. In eu odio eu sapien tincidunt interdum. Praesent tortor nisl, accumsan et laoreet ut, blandit ut arcu. Praesent blandit ut diam a semper. Aenean vitae ultrices purus. Nulla consectetur risus ullamcorper nibh iaculis faucibus. Ut felis dui, ultricies sed varius dictum, ullamcorper nec diam. Phasellus ornare non eros sed dignissim. Nulla eget sollicitudin nisi, et dignissim quam. Aliquam erat volutpat. Morbi scelerisque sem pellentesque est semper tempor. In volutpat lorem id lacus facilisis, vitae accumsan ligula dictum. Nullam vel nisl nisl. Vestibulum turpis lectus, dictum id lectus ut, finibus interdum tellus. Proin a magna arcu.',
-    'Desc 4. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed egestas magna augue, et luctus est placerat eget. In eu odio eu sapien tincidunt interdum. Praesent tortor nisl, accumsan et laoreet ut, blandit ut arcu. Praesent blandit ut diam a semper. Aenean vitae ultrices purus. Nulla consectetur risus ullamcorper nibh iaculis faucibus. Ut felis dui, ultricies sed varius dictum, ullamcorper nec diam. Phasellus ornare non eros sed dignissim. Nulla eget sollicitudin nisi, et dignissim quam. Aliquam erat volutpat. Morbi scelerisque sem pellentesque est semper tempor. In volutpat lorem id lacus facilisis, vitae accumsan ligula dictum. Nullam vel nisl nisl. Vestibulum turpis lectus, dictum id lectus ut, finibus interdum tellus. Proin a magna arcu.',
-    'Desc 5. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed egestas magna augue, et luctus est placerat eget. In eu odio eu sapien tincidunt interdum. Praesent tortor nisl, accumsan et laoreet ut, blandit ut arcu. Praesent blandit ut diam a semper. Aenean vitae ultrices purus. Nulla consectetur risus ullamcorper nibh iaculis faucibus. Ut felis dui, ultricies sed varius dictum, ullamcorper nec diam. Phasellus ornare non eros sed dignissim. Nulla eget sollicitudin nisi, et dignissim quam. Aliquam erat volutpat. Morbi scelerisque sem pellentesque est semper tempor. In volutpat lorem id lacus facilisis, vitae accumsan ligula dictum. Nullam vel nisl nisl. Vestibulum turpis lectus, dictum id lectus ut, finibus interdum tellus. Proin a magna arcu.',
+    'Desc 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+    'Desc 2. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+    'Desc 3. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+    'Desc 4. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+    'Desc 5. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit',
   ])
 
   const [completions, setCompletions] = useState([0, 0, 0, 0, 0])
+  const [zombieProps, setZombieProps] = useState({
+    hat: 1,
+    eyes: 1,
+    top: 1,
+    bottom: 1,
+    skin: 1,
+    background: 1,
+  })
 
-/* A callback function that will be called when the user sign in or sign out. */
+  /* A callback function that will be called when the user sign in or sign out. */
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       for (let i = 0; i < completions.length; i++) {
@@ -47,6 +56,12 @@ export default function Home() {
               }
               return copy
             })
+          })
+          const pathRef_2 = ref(database, 'users/' + user.uid + '/zombie')
+          get(pathRef_2).then((snapshot) => {
+            if (snapshot.exists()) {
+              setZombieProps(snapshot.val())
+            }
           })
         }
       }
@@ -90,7 +105,11 @@ export default function Home() {
                         {descriptions[i].substring(0, 100) + '...'}
                       </p>
 
-                      <progress className="progress progress-primary my-2" value={completions[i]} max="5"></progress>
+                      <progress
+                        className="progress progress-primary my-2"
+                        value={completions[i]}
+                        max="5"
+                      ></progress>
                     </div>
                   </div>
                 ))}
@@ -105,6 +124,10 @@ export default function Home() {
                 <p className="mb-3 text-justify leading-relaxed text-black">
                   {descriptions[descIdx]}
                 </p>
+
+                {/* Custom Character*/}
+                <Character zombieProps={zombieProps} />
+
                 <Link
                   href={
                     '/EN/course_' +
@@ -113,12 +136,14 @@ export default function Home() {
                     (completions[descIdx] + 1)
                   }
                 >
-                  <button className="inline-flex rounded border-0 bg-black py-2 px-20 text-lg text-white hover:bg-gray-700 focus:outline-none">
+                  <button className="itmes-center inline-flex bg-bone-button bg-contain bg-center bg-no-repeat py-4 px-20 text-lg text-black  transition focus:translate-y-1 ">
                     Start Now
                   </button>
                 </Link>
               </div>
             </div>
+
+            <div className="mt-12 ml-4 rounded-lg object-cover object-center md:mt-0 md:w-1/2 lg:w-1/3"></div>
           </div>
         </div>
         <div className="h-32 bg-bg-footer bg-cover bg-bottom bg-no-repeat" />

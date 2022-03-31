@@ -1,5 +1,5 @@
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
+import Navbar from '../components/navbar/Navbar'
+import Footer from '../components/footer/Footer'
 import { useEffect, useState } from 'react'
 import { auth } from '../firebase/config'
 import { getDatabase, get, ref } from 'firebase/database'
@@ -20,7 +20,6 @@ type ZombieProps = {
 }
 
 export default function Home() {
-
   const [zombieProps, setZombieProps] = useState({
     hat: 1,
     eyes: 1,
@@ -30,7 +29,7 @@ export default function Home() {
     background: 1,
   })
 
-/* fetch zombie properties from firebase only once */
+  /* fetch zombie properties from firebase only once */
   useEffect(() => {
     if (!auth.currentUser) {
       readFromLocalStorage()
@@ -47,12 +46,10 @@ export default function Home() {
     })
   }, [])
 
-/* Reads the zombieProps from localStorage and sets the zombieProps state*/
+  /* Reads the zombieProps from localStorage and sets the zombieProps state*/
   const readFromLocalStorage = () => {
-    var zombiePropsStorage = JSON.parse(
-      localStorage.getItem('zombieProps') || ''
-    )
-    if (zombiePropsStorage != '') {
+    if (localStorage.getItem('zombieProps')) {
+      var zombiePropsStorage = JSON.parse(localStorage.getItem('zombieProps')!)
       setZombieProps(zombiePropsStorage)
     }
   }

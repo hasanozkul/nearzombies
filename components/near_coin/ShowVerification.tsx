@@ -9,7 +9,7 @@ import {
   ExclamationIcon,
   MailIcon,
 } from '@heroicons/react/outline'
-import { auth } from '../firebase/config'
+import { auth } from '../../firebase/config'
 import { sendEmailVerification } from 'firebase/auth'
 
 function sendVerification() {

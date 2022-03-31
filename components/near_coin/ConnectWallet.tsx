@@ -1,7 +1,7 @@
 import * as nearAPI from 'near-api-js'
 import { useEffect, useState } from 'react'
-import { auth } from '../firebase/config'
-import SignIn from './SignIn'
+import { auth } from '../../firebase/config'
+import SignIn from '../navbar/SignIn'
 import { LinkIcon } from '@heroicons/react/outline'
 import { Near } from 'near-api-js'
 

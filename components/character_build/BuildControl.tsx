@@ -42,15 +42,15 @@ const BuildControl: NextPage<Props> = (props) => {
   /* send firebase information if user clicks the 'start now' button */
   return (
     <div className="mx-auto max-w-full  p-0 sm:p-4 lg:h-auto lg:w-1/2 2xl:w-1/3">
-      <div className="relative h-full min-w-fit overflow-hidden rounded-lg bg-gray-300 bg-opacity-75 px-0 pt-6 pb-8 text-center sm:px-8 sm:pt-10 sm:pb-12">
-        <h1 className="title-font mb-3 text-xl font-medium text-gray-900 sm:text-2xl">
+      <div className="relative h-full min-w-fit overflow-hidden rounded-lg bg-gray-300 bg-opacity-75 px-0 pt-3 pb-4 text-center sm:pt-6 sm:pb-8 md:px-8 md:pt-10 md:pb-12">
+        <h1 className="title-font mb-1 text-xl font-medium text-gray-900 sm:mb-2 sm:text-2xl md:mb-3">
           Build Control
         </h1>
-        <div className="grid grid-rows-1 gap-4 p-0">
+        <div className="grid grid-rows-1 gap-1 p-0 sm:gap-2 md:gap-4">
           {['hat', 'eyes', 'top', 'bottom', 'skin', 'background'].map(
             (key, idx) => (
               <div key={idx}>
-                <h2 className="title-font mb-3 text-sm font-medium tracking-widest text-gray-400">
+                <h2 className="title-font mb-1 text-sm font-medium tracking-widest text-gray-400 md:mb-3">
                   {key.toUpperCase()}
                 </h2>
                 <div className="mb-3 flex ">
@@ -61,7 +61,7 @@ const BuildControl: NextPage<Props> = (props) => {
                           key={i}
                           data-content={''}
                           className={
-                            'step cursor-pointer ' +
+                            ' step cursor-pointer ' +
                             ({ ...props.zombieProps }[key] == i
                               ? 'step-primary'
                               : '')
@@ -78,11 +78,11 @@ const BuildControl: NextPage<Props> = (props) => {
             )
           )}
         </div>
-        <div className="mt-10 flex justify-end">
+        <div className="mt-3 flex justify-end sm:mt-6 md:mt-10">
           <Link href="/EN/course">
             <button
               onClick={pushZombieProps}
-              className=" mx-auto h-16 border-0 bg-bone-button bg-contain bg-no-repeat py-2 px-20 text-lg text-black transition focus:translate-y-1 focus:outline-none"
+              className=" mx-auto h-16 border-0 bg-bone-button bg-contain bg-no-repeat py-2 px-20 text-lg text-black transition focus:outline-none active:translate-y-1"
             >
               Start Now
             </button>

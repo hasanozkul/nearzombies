@@ -1,19 +1,19 @@
 import {
   onAuthStateChanged,
-  sendEmailVerification,
   setPersistence,
   browserLocalPersistence,
   createUserWithEmailAndPassword,
 } from 'firebase/auth'
 import { getDatabase, ref, set } from 'firebase/database'
 import { useState } from 'react'
-import { auth } from '../firebase/config'
+import { auth } from '../../firebase/config'
 
 export default function Register() {
   const [email, setEmail] = useState('')
   const [passwd, setPasswd] = useState('')
   const [rePasswd, setRePasswd] = useState('')
   const [referral, setReferral] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const [registerError, setRegisterError] = useState<string | null>(null)
   const database = getDatabase()
 
@@ -31,29 +31,46 @@ export default function Register() {
     password: string,
     referrance: string
   ) => {
-    let errorMessage: string | null = null
+    if (!email || !password) {
+      setRegisterError('Email and password required!')
+      setIsLoading(false)
+      return
+    }
     setPersistence(auth, browserLocalPersistence)
       .then(() => {
         pushReferralToFirebase(referrance)
 
         createUserWithEmailAndPassword(auth, email, password)
+          .catch((error) => {
+            if (
+              error.message ===
+              'Firebase: Password should be at least 6 characters (auth/weak-password).'
+            )
+              setRegisterError('Password should be at least 6 characters')
+            else if (
+              error.message === 'Firebase: Error (auth/email-already-in-use).'
+            )
+              setRegisterError('Email already in use')
+            else setRegisterError(error.message)
+            setIsLoading(false)
+          })
+          .then(() => setIsLoading(false))
       })
-      .catch((error) => (errorMessage = error.message))
-
-    return errorMessage
+      .catch((error) => setRegisterError(error.message))
   }
 
   const handleRegister = async () => {
+    setIsLoading(true)
     if (passwd !== rePasswd) {
       setRegisterError('Passwords does not match!')
     } else {
-      setRegisterError(await registerAuth(email, passwd, referral))
+      await registerAuth(email, passwd, referral)
     }
   }
 
   return (
-    <div className="sticky z-50 w-[100vw]">
-      <div className="mt-10 flex w-full flex-col rounded-lg bg-gray-100 p-8 md:ml-auto md:mt-0 md:w-1/2 lg:w-2/6">
+    <div className="sticky z-50 w-[90vw] animate-withClipPath sm:w-[100vw]">
+      <div className="mt-5 flex w-full flex-col rounded-lg bg-gray-100 p-8 md:-mt-16 md:ml-auto md:w-1/2 lg:w-2/6">
         <h2 className="title-font mb-5 text-lg font-medium text-gray-900">
           Register
         </h2>
@@ -110,13 +127,16 @@ export default function Register() {
           />
         </div>
         <button
+          disabled={isLoading}
           onClick={handleRegister}
-          className="rounded border-0 bg-gray-600 py-2 px-8 text-lg text-white hover:bg-black focus:outline-none"
+          className="cursor-pointer rounded  border-0 bg-gray-600 py-2 px-8 text-lg text-white duration-200 hover:bg-black/90 focus:outline-none disabled:cursor-wait disabled:opacity-70 "
         >
           Register
         </button>
         {registerError !== null && (
-          <p className="mt-3 text-xs text-gray-500">{registerError}</p>
+          <p className="mt-4 rounded border-0 bg-red-500 py-2 px-8 text-center text-lg text-white focus:outline-none">
+            {registerError}
+          </p>
         )}
       </div>
     </div>

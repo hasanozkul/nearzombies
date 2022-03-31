@@ -1,6 +1,6 @@
 import Head from 'next/head'
-import Navbar from '../../../components/Navbar'
-import Footer from '../../../components/Footer'
+import Navbar from '../../../components/navbar/Navbar'
+import Footer from '../../../components/footer/Footer'
 import Image from 'next/image'
 import CodeEditor from '../../../components/CodeEditor'
 import { useEffect, useState } from 'react'
@@ -30,7 +30,10 @@ function getChapterData() {
 
     async function test() {
       await get(
-        child(dbRef, 'courses/' + lang + '/' + course + '/chapters/' + chapter + '/')
+        child(
+          dbRef,
+          'courses/' + lang + '/' + course + '/chapters/' + chapter + '/'
+        )
       )
         .then((snapshot) => {
           if (snapshot.exists()) {
@@ -58,9 +61,7 @@ function getChapterData() {
 }
 
 const Chapter = () => {
-  useEffect(() => {
-
-  })
+  useEffect(() => {})
   const chapterData = getChapterData()
 
   const [showCongrats, setShowCongrats] = useState(false)
@@ -74,17 +75,15 @@ const Chapter = () => {
     setShowCongrats(false)
   }
 
-  
-
   const router = useRouter()
-  const [ currLang, currCourse, currChapter ] = useRouter().asPath.substring(1).split(/[/]/)
-  
+  const [currLang, currCourse, currChapter] = useRouter()
+    .asPath.substring(1)
+    .split(/[/]/)
+
   const chapterNum = Number(currChapter.replace(/\D/g, '')) + 1
-  const nextChapter = "chapter_"  + chapterNum
-  
-  
- 
-  const nextRoute = "/" + currLang + "/" + currCourse + "/" + nextChapter
+  const nextChapter = 'chapter_' + chapterNum
+
+  const nextRoute = '/' + currLang + '/' + currCourse + '/' + nextChapter
   const { width, height } = useWindowSize()
 
   return (

@@ -4,7 +4,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 @layer base {
-    body {
-      @apply bg-white;
-    }
+  body {
+    @apply bg-white;
   }
+  .navbar_button {
+    @apply z-50 mt-4 mr-2 inline-flex items-center rounded border-0 bg-gray-200 py-1 px-3 text-lg duration-200 hover:shadow-md focus:outline-none md:mt-0 md:hover:shadow-white;
+  }
+}

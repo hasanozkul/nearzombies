@@ -16,7 +16,7 @@ const Character: NextPage<Props> = (props) => {
     <div className=" my-5 h-96 w-full p-4 lg:h-auto lg:w-1/2 2xl:w-1/3 ">
       <div className="relative  h-full overflow-hidden rounded-lg bg-contain bg-center bg-no-repeat px-8 pt-16 pb-24 text-center">
         {/* adding images one by one in a row */}
-        {['background', 'skin', 'hat', 'eyes', 'top', 'bottom'].map(
+        {['background', 'skin', 'eyes', 'hat', 'bottom', 'top'].map(
           (key, i) => {
             return (
               <Image
