@@ -56,7 +56,6 @@ export default function Home() {
 
   return (
     <div className=" overflow-auto text-ellipsis">
-      <Navbar />
       <section
         id="character-build"
         className="min-w-fit bg-bg-courses bg-cover"
@@ -79,8 +78,6 @@ export default function Home() {
         </div>
         <div className="h-32 bg-bg-footer bg-cover bg-bottom bg-no-repeat" />
       </section>
-
-      <Footer />
     </div>
   )
 }

@@ -1,10 +1,13 @@
+import Head from 'next/head'
 import Navbar from '../../../components/navbar/Navbar'
 import Footer from '../../../components/footer/Footer'
 import Image from 'next/image'
 import CodeEditor from '../../../components/CodeEditor'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import iCustomCharacter from '/public/images/character_build/skin/skin_1.png'
 import { useRouter } from 'next/router'
+import next, { GetStaticPaths } from 'next'
 import Confetti from 'react-confetti'
 import { useWindowSize } from 'react-use'
 import { ref, getDatabase, get, child, onValue } from 'firebase/database'
@@ -85,8 +88,6 @@ const Chapter = () => {
 
   return (
     <>
-      <Navbar />
-
       <section id="content" className="body-font mb-20 text-gray-600">
         <div className=" mx-full py">
           <div className="m-4 flex place-content-center">
@@ -206,7 +207,6 @@ const Chapter = () => {
         </div>
       </section>
       <div className=" mt-10 h-32 bg-bg-footer bg-cover bg-bottom bg-no-repeat" />
-      <Footer />
     </>
   )
 }

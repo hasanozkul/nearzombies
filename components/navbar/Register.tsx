@@ -70,7 +70,10 @@ export default function Register() {
 
   return (
     <div className="sticky z-50 w-[90vw] animate-withClipPath sm:w-[100vw]">
-      <div className="mt-5 flex w-full flex-col rounded-lg bg-gray-100 p-8 md:-mt-16 md:ml-auto md:w-1/2 lg:w-2/6">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="mt-5 flex w-full flex-col rounded-lg bg-gray-100 p-8 md:-mt-16 md:ml-auto md:w-1/2 lg:w-2/6"
+      >
         <h2 className="title-font mb-5 text-lg font-medium text-gray-900">
           Register
         </h2>
@@ -101,15 +104,18 @@ export default function Register() {
           />
         </div>
         <div className="relative mb-4">
-          <label htmlFor="password" className="text-sm leading-7 text-gray-600">
+          <label
+            htmlFor="confirmpassword"
+            className="text-sm leading-7 text-gray-600"
+          >
             Password
           </label>
           <input
             autoComplete="password"
             onChange={(e) => setRePasswd(e.target.value)}
             type="password"
-            id="password"
-            name="password"
+            id="confirmpassword"
+            name="confirmpassword"
             className="w-full rounded border border-gray-300 bg-white py-1 px-3 text-base leading-8 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
           />
         </div>

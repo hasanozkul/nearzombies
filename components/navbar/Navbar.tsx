@@ -16,9 +16,12 @@ import Image from 'next/image'
 
 import LoginHandler from './LoginHandler'
 
-const Navbar = () => {
+const Navbar = ({ showState }: any) => {
   return (
-    <header className="body-font h-[11vh] bg-bg-navbar bg-cover bg-no-repeat text-gray-600 ">
+    <header
+      className="body-font h-[11vh] w-full  bg-bg-navbar bg-cover bg-no-repeat  text-gray-600 "
+      onClick={() => console.log('tiklandi')}
+    >
       <div className="container mx-auto flex flex-col flex-wrap items-center sm:py-2 md:flex-row md:items-start md:py-6">
         <a className="title-font   flex items-center font-medium text-gray-900 md:mb-0">
           <Link href="/">
@@ -40,7 +43,7 @@ const Navbar = () => {
         </Link>
         */}
         </div>
-        <LoginHandler />
+        <LoginHandler showState={showState} />
       </div>
     </header>
   )

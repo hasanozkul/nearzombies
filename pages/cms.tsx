@@ -122,7 +122,7 @@ const Home = ({ courses }: any) => {
   const handleSubmit = (event: any) => {
     event.preventDefault()
 
-/* Checking if the chapter is new. If it is new, it will set the chapter number to the length of the
+    /* Checking if the chapter is new. If it is new, it will set the chapter number to the length of the
 chapter list plus 1. */
     let chapterID = chapterData.chapter
     if (chapterData.chapter == 'New Chapter') {
@@ -336,3 +336,7 @@ chapter list plus 1. */
 }
 
 export default Home
+
+Home.getLayout = function PageLayout(page: any) {
+  return <>{page}</>
+}

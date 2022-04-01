@@ -8,23 +8,33 @@ import iNearCoin from '/public/images/nav_coin_logo.png'
 import Image from 'next/image'
 import { NearCoin } from '../near_coin/NearCoin'
 
-export default function LoginHandler() {
+type ShowState = {
+  sign: boolean
+  register: boolean
+  coin: boolean
+}
+
+export default function LoginHandler({ showState }: any) {
   // default values
   const [loggedIn, setLoggedIn] = useState(false)
-  const [show, setShow] = useState({
-    sign: false,
-    register: false,
-    coin: false,
-  })
+  const { show, setShow } = showState
   const [coin, setCoin] = useState(0)
   const database = getDatabase()
 
   // button visibility handler
-  const handleSignClick = () =>
+  const handleSignClick = (e: any) => {
+    e.stopPropagation()
     setShow({ sign: !show.sign, register: false, coin: false })
-  const handleCoinClick = () => setShow({ ...show, coin: !show.coin })
-  const handleRegisterClick = () =>
+  }
+  const handleCoinClick = (e: any) => {
+    e.stopPropagation()
+    setShow({ ...show, coin: !show.coin })
+  }
+  const handleRegisterClick = (e: any) => {
+    e.stopPropagation()
+
     setShow({ sign: false, register: !show.register, coin: false })
+  }
 
   const setCoinOfUser = () => {
     const user = auth.currentUser

@@ -3,15 +3,11 @@ import Image from 'next/image'
 import iCharLeft from '/public/images/home_char_left.png'
 import iCharRight from '/public/images/home_char_right.png'
 import Link from 'next/link'
-import { getDatabase, ref, set, get } from 'firebase/database'
-import Navbar from '../components/navbar/Navbar'
-import Footer from '../components/footer/Footer'
-const database = getDatabase()
+import { getDatabase } from 'firebase/database'
 
 export default function Home() {
   return (
     <>
-      <Navbar />
       <section className="body-font h-[80vh] text-gray-600 md:h-[90vh]">
         <div className="absolute flex h-[80vh] w-[100%] md:h-[90vh] ">
           <div className="relative w-[calc(80vh*696/1606)] md:w-[calc(90vh*696/1606)]">
@@ -78,7 +74,6 @@ export default function Home() {
       </section>
 
       <div className="h-32 bg-bg-footer bg-cover bg-bottom bg-no-repeat" />
-      <Footer />
     </>
   )
 }

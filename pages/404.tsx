@@ -14,21 +14,17 @@ const NotFound = () => {
   }, [])
 
   return (
-    <>
-      <Navbar />
-      <div>
-        <h1>Ooops...</h1>
-        <h2>That page cannot be found :(</h2>
-        <p>
-          Going back to the{' '}
-          <Link href="/">
-            <a>Homepage</a>
-          </Link>{' '}
-          is 3 seconds...
-        </p>
-      </div>
-      <Footer />
-    </>
+    <div>
+      <h1>Ooops...</h1>
+      <h2>That page cannot be found :(</h2>
+      <p>
+        Going back to the{' '}
+        <Link href="/">
+          <a>Homepage</a>
+        </Link>{' '}
+        is 3 seconds...
+      </p>
+    </div>
   )
 }
 

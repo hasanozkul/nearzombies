@@ -20,11 +20,10 @@ const Character: NextPage<Props> = (props) => {
           (key, i) => {
             return (
               <Image
+                key={i}
                 src={`/images/character_build/${key}/${key}_${
                   { ...props.zombieProps }[key]
                 }.png`}
-                // placeholder="blur"
-                // blurDataURL={`/images/character_build/${key}/${key}_1}.png`}
                 layout="fill"
                 objectFit="contain"
                 className="absolute"

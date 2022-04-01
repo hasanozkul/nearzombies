@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { auth } from '../../../firebase/config'
 import { getDatabase, get, ref } from 'firebase/database'
 import { onAuthStateChanged } from 'firebase/auth'
+import ProgressBar from '@ramonak/react-progress-bar'
 import Character from '../../../components/character_build/Character'
 const database = getDatabase()
 
@@ -75,8 +76,6 @@ export default function Home() {
 
   return (
     <>
-      <Navbar />
-
       <section className="body-font bg-bg-courses bg-cover text-gray-600">
         <div className="container mx-auto flex flex-wrap py-24">
           <div className="flex w-full flex-wrap">
@@ -143,8 +142,6 @@ export default function Home() {
         </div>
         <div className="h-32 bg-bg-footer bg-cover bg-bottom bg-no-repeat" />
       </section>
-
-      <Footer />
     </>
   )
 }
