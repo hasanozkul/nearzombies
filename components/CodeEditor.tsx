@@ -11,45 +11,58 @@
 |
 */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Editor, { DiffEditor } from '@monaco-editor/react'
 import * as monaco from 'monaco-editor'
 import { auth } from '../firebase/config'
-import { ref, get, getDatabase, set, onValue } from 'firebase/database'
-import { onAuthStateChanged } from 'firebase/auth'
-import Router, { useRouter } from 'next/router'
-import { ToastContainer, toast } from 'react-toastify'
-import useWindowSize from 'react-use/lib/useWindowSize'
+import { ref, get, getDatabase, set } from 'firebase/database'
 import { HeartIcon } from '@heroicons/react/solid'
-import {
-  XCircleIcon,
-  CheckCircleIcon,
-  UsersIcon,
-} from '@heroicons/react/outline'
+import { XCircleIcon, CheckCircleIcon } from '@heroicons/react/outline'
 
 const database = getDatabase()
 
+/**
+ * This function is responsible for rendering the code editor.
+ *
+ * It has a bunch of props that are passed from the parent component.
+ *
+ * The props are:
+ *
+ * - value: The value of the code editor.
+ * - expectedValue: The expected value of the code editor.
+ * - lang: The language of the code editor.
+ * - showCongrats: A function that is responsible for showing the congrats message.
+ *
+ * The function has a bunch of states that are responsible for showing the error message, the success
+ * message, the answer, and the remaining life.
+ *
+ * The states are:
+ *
+ * - showError: A boolean that is responsible for showing the error message.
+ * - showSuccess: A boolean that is responsible for showing the success message.
+ * - showAnswer: A boolean that is responsible for showing the answer.
+ * - remainingLife: A number that is responsible for showing the remaining life
+ * @param editor - monaco.editor.IStandaloneCodeEditor,
+ * @param Monaco - typeof monaco
+ */
 function CodeEditor(props: any) {
-  const router = useRouter()
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
+
+  const [value, setValue] = useState(props.value)
+
   const diffEditorRef = useRef<monaco.editor.IStandaloneDiffEditor | null>(null)
   const [showError, setShowError] = useState(false)
   const [openDiff, setOpenDiff] = useState(false)
-  const { width, height } = useWindowSize()
   const [remainingLife, setRemainingLife] = useState<Number>(3)
   const [showAnswer, setShowAnswer] = useState<boolean>(false)
   const [showSuccess, setShowSuccess] = useState<boolean>(false)
-  const [resetCode, setResetCode] = useState<boolean>(false)
-  const [userTotalCoin, setUserTotalCoin] = useState<number>(0)
 
   /* It's a function that shows an error message when the user submit the code and it's wrong. */
   const SubmitErr = () => {
     {
-      /**
-    setTimeout(() => {
-      setShowError(false)
-    }, 2500)
- */
+      setTimeout(() => {
+        setShowError(false)
+      }, 2500)
     }
 
     return (
@@ -91,11 +104,7 @@ function CodeEditor(props: any) {
   }
 
   function getValue() {
-    try {
-      return editorRef!.current!.getValue()
-    } catch (error) {
-      return props.value
-    }
+    return value
   }
 
   function handleDiffEditorDidMount(
@@ -107,6 +116,7 @@ function CodeEditor(props: any) {
 
   function getModifiedValue() {
     try {
+      setValue(diffEditorRef!.current!.getModifiedEditor().getValue())
       return diffEditorRef!.current!.getModifiedEditor().getValue()
     } catch (error) {
       return props.value
@@ -122,27 +132,25 @@ function CodeEditor(props: any) {
       )
       const userCoinPath = ref(database, 'users/' + user.uid + '/coin/')
 
-      get(userCoinPath)
-        .then((snapshot) => {
-          if (snapshot.exists()) {
-            // wont update !!
-            setUserTotalCoin(snapshot.val())
-          }
-        })
-        .then(() => {
-          if (remainingLife > 0) {
-            set(userChapterSavePath, 'completed')
-            // change with chpater reward
-            set(userCoinPath, userTotalCoin + 10)
-          } else {
-            set(userChapterSavePath, 'answer_shown')
-          }
-          const lastRef = ref(
-            database,
-            'users/' + user.uid + '/save/' + props.course + '/last_chapter'
-          )
-          set(lastRef, props.chapter.replace(/\D/g, ''))
-        })
+      get(userCoinPath).then((snapshot) => {
+        let val = 0
+        if (snapshot.exists()) {
+          console.log()
+          val = snapshot.val()
+        }
+        if (remainingLife > 0) {
+          set(userChapterSavePath, 'completed')
+
+          set(userCoinPath, val + 10)
+        } else {
+          set(userChapterSavePath, 'answer_shown')
+        }
+        const lastRef = ref(
+          database,
+          'users/' + user.uid + '/save/' + props.course + '/last_chapter'
+        )
+        set(lastRef, props.chapter.replace(/\D/g, ''))
+      })
     }
   }
 
@@ -150,12 +158,9 @@ function CodeEditor(props: any) {
     let value: string
     let expected: string = props.expectedValue
     const regex = /\s/g
-
     if (openDiff) {
       value = getModifiedValue()
-    } else {
-      value = getValue()
-    }
+    } else value = getValue()
     value = value.replace(regex, '')
     expected = expected.replace(regex, '')
 
@@ -191,8 +196,9 @@ function CodeEditor(props: any) {
     )
   }
 
-  function handleResetCode() {
-    return null
+  function handleResetCode(setValue: any) {
+    setOpenDiff(false)
+    setValue(props.value)
   }
 
   return (
@@ -202,7 +208,7 @@ function CodeEditor(props: any) {
           <DiffEditor
             language={props.lang}
             original={props.expectedValue}
-            modified={getValue()}
+            modified={value}
             onMount={handleDiffEditorDidMount}
             theme="vs-dark"
           />
@@ -210,7 +216,8 @@ function CodeEditor(props: any) {
         {!openDiff && (
           <Editor
             defaultLanguage={props.lang}
-            defaultValue={getModifiedValue()}
+            value={value}
+            onChange={(e) => setValue(e)}
             onMount={handleEditorDidMount}
             theme="vs-dark"
           />
@@ -228,7 +235,7 @@ function CodeEditor(props: any) {
           </button>
 
           <button
-            onClick={handleResetCode}
+            onClick={handleResetCode.bind(null, setValue)}
             className="mr-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-200 py-2 text-lg text-gray-500 hover:bg-gray-300 focus:outline-none"
           >
             Reset

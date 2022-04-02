@@ -111,16 +111,17 @@ export default function Home() {
             </div>
 
             <div className="mt-12 ml-4 rounded-lg object-cover object-center md:mt-0 md:w-1/2 lg:w-1/3">
-              <div className="relative h-full overflow-hidden rounded-[20px] bg-gray-100 bg-opacity-90 px-8 pt-16 pb-24 text-center">
+              <div className="relative h-full overflow-hidden rounded-[20px] bg-gray-100 bg-opacity-90 px-8 pt-8 pb-16 text-center">
+                <div className="my-0 mx-auto mb-5 h-[16rem] p-0 ">
+                  {/* Custom Character*/}
+                  <Character zombieProps={zombieProps} />
+                </div>
                 <h1 className="title-font mb-3 text-xl font-medium text-black sm:text-2xl">
                   Description
                 </h1>
-                <p className="mb-3 text-justify leading-relaxed text-black">
+                <p className="mb-3 px-4  text-center leading-relaxed text-black">
                   {descriptions[descIdx]}
                 </p>
-
-                {/* Custom Character*/}
-                <Character zombieProps={zombieProps} />
 
                 <Link
                   href={

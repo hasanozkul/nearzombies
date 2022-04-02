@@ -20,7 +20,15 @@ function MyApp({ Component, pageProps }: AppProps | any) {
     })
   }
   if (Component.getLayout) {
-    return Component.getLayout(<Component {...pageProps} />)
+    return Component.getLayout(
+      <>
+        <Head>
+          <title>NearZombies</title>
+          <link rel="shortcut icon" href="/images/favicon.ico" />
+        </Head>
+        <Component {...pageProps} />
+      </>
+    )
   }
   return (
     <>

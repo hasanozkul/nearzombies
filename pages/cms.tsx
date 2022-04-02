@@ -1,16 +1,8 @@
-import { languages } from 'monaco-editor'
-import {
-  ReactChild,
-  ReactFragment,
-  ReactPortal,
-  useEffect,
-  useState,
-} from 'react'
+import { useEffect, useState } from 'react'
 import { getDatabase, ref, set, get, child, remove } from 'firebase/database'
-import { checkPrimeSync } from 'crypto'
-import { countReset } from 'console'
 import { initializeApp } from 'firebase/app'
-import { language } from 'gray-matter'
+import { auth } from '../firebase/config'
+import { useRouter } from 'next/router'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDOH3reAi4V7n0KC7sEWPGFsYLc7Bntrvg',
@@ -53,6 +45,8 @@ export const getStaticProps = async () => {
 
 const Home = ({ courses }: any) => {
   /* A way to set the initial state of the chapter data. */
+  const router = useRouter()
+  const user = auth.currentUser
   const [chapterData, setChapterData] = useState({
     language: 'EN',
     course: 'course_1',
@@ -65,12 +59,17 @@ const Home = ({ courses }: any) => {
     expected_code: '',
     given_code: '',
   })
-
   const langList = Object.keys(courses)
   const courseList = Object.keys(courses[chapterData.language])
   const chapterList = Object.keys(
     courses[chapterData.language][chapterData.course]['chapters']
   )
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/')
+    }
+  }, [])
 
   /* A way to set the initial state of the chapter data. */
   useEffect(() => {
@@ -170,168 +169,172 @@ chapter list plus 1. */
   }
 
   return (
-    <div className="">
-      <div className="bg-violet-500 py-12 pl-24">
-        <h1 className="text-3xl">Content Management</h1>
+    user && (
+      <div className="">
+        <div className="bg-violet-500 py-12 pl-24">
+          <h1 className="text-3xl">Content Management</h1>
+        </div>
+
+        <form
+          className="mt-6 ml-24 flex flex-col space-y-4"
+          onSubmit={handleSubmit}
+        >
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Language</span>
+            </label>
+            <select
+              name="language"
+              onChange={handleChange}
+              className="select-bordered select"
+            >
+              {langList.map((lang, idx) => (
+                <option key={idx}>{lang}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Course</span>
+            </label>
+            <select
+              name="course"
+              onChange={handleChange}
+              className="select-bordered select"
+            >
+              {courseList.map((course, idx) => (
+                <option key={idx}>{course}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Chapter</span>
+            </label>
+            <select
+              name="chapter"
+              onChange={handleChange}
+              className="select-bordered select"
+            >
+              <option className="font-bold text-emerald-600">
+                New Chapter
+              </option>
+              {chapterList.map((chapter, idx) => (
+                <option key={idx}>{chapter}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Title</span>
+            </label>
+            <input
+              name="title"
+              value={chapterData.title}
+              onChange={handleChange}
+              type="text"
+              placeholder="Type here"
+              className="input-bordered input w-full max-w-xs"
+            />
+          </div>
+
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Author</span>
+            </label>
+            <input
+              name="author"
+              value={chapterData.author}
+              onChange={handleChange}
+              type="text"
+              placeholder="Type here"
+              className="input-bordered input w-full max-w-xs"
+            />
+          </div>
+
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Date</span>
+            </label>
+            <input
+              name="date"
+              value={chapterData.date}
+              onChange={handleChange}
+              type="text"
+              placeholder="Type here"
+              className="input-bordered input w-full max-w-xs"
+            />
+          </div>
+
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Coin Rewared</span>
+            </label>
+            <input
+              name="coin_reward"
+              value={chapterData.coin_reward}
+              onChange={handleChange}
+              type="text"
+              placeholder="Type here"
+              className="input-bordered input w-full max-w-xs"
+            />
+          </div>
+
+          <div className="form-control w-1/3">
+            <label className="label">
+              <span className="label-text">Content</span>
+            </label>
+            <textarea
+              name="content"
+              value={chapterData.content}
+              onChange={handleChange}
+              className="textarea-bordered textarea h-24"
+              placeholder="Bio"
+            ></textarea>
+          </div>
+
+          <div className="form-control w-1/3">
+            <label className="label">
+              <span className="label-text">Given code</span>
+            </label>
+            <textarea
+              name="given_code"
+              value={chapterData.given_code}
+              onChange={handleChange}
+              className="textarea-bordered textarea h-24"
+              placeholder="Bio"
+            ></textarea>
+          </div>
+
+          <div className="form-control w-1/3">
+            <label className="label">
+              <span className="label-text">Expected code</span>
+            </label>
+            <textarea
+              name="expected_code"
+              value={chapterData.expected_code}
+              onChange={handleChange}
+              className="textarea-bordered textarea h-24"
+              placeholder="Bio"
+            ></textarea>
+          </div>
+
+          <div className="mt-6 flex w-64 gap-4 pb-12">
+            <input type="submit" value="Submit" className="btn"></input>
+            <button
+              type="button"
+              onClick={handleDeleteUser}
+              className="btn btn-error"
+            >
+              Delete
+            </button>
+          </div>
+        </form>
       </div>
-
-      <form
-        className="mt-6 ml-24 flex flex-col space-y-4"
-        onSubmit={handleSubmit}
-      >
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">Language</span>
-          </label>
-          <select
-            name="language"
-            onChange={handleChange}
-            className="select-bordered select"
-          >
-            {langList.map((lang) => (
-              <option>{lang}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">Course</span>
-          </label>
-          <select
-            name="course"
-            onChange={handleChange}
-            className="select-bordered select"
-          >
-            {courseList.map((course) => (
-              <option>{course}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">Chapter</span>
-          </label>
-          <select
-            name="chapter"
-            onChange={handleChange}
-            className="select-bordered select"
-          >
-            <option className="font-bold text-emerald-600">New Chapter</option>
-            {chapterList.map((chapter) => (
-              <option>{chapter}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">Title</span>
-          </label>
-          <input
-            name="title"
-            value={chapterData.title}
-            onChange={handleChange}
-            type="text"
-            placeholder="Type here"
-            className="input-bordered input w-full max-w-xs"
-          />
-        </div>
-
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">Author</span>
-          </label>
-          <input
-            name="author"
-            value={chapterData.author}
-            onChange={handleChange}
-            type="text"
-            placeholder="Type here"
-            className="input-bordered input w-full max-w-xs"
-          />
-        </div>
-
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">Date</span>
-          </label>
-          <input
-            name="date"
-            value={chapterData.date}
-            onChange={handleChange}
-            type="text"
-            placeholder="Type here"
-            className="input-bordered input w-full max-w-xs"
-          />
-        </div>
-
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">Coin Rewared</span>
-          </label>
-          <input
-            name="coin_reward"
-            value={chapterData.coin_reward}
-            onChange={handleChange}
-            type="text"
-            placeholder="Type here"
-            className="input-bordered input w-full max-w-xs"
-          />
-        </div>
-
-        <div className="form-control w-1/3">
-          <label className="label">
-            <span className="label-text">Content</span>
-          </label>
-          <textarea
-            name="content"
-            value={chapterData.content}
-            onChange={handleChange}
-            className="textarea-bordered textarea h-24"
-            placeholder="Bio"
-          ></textarea>
-        </div>
-
-        <div className="form-control w-1/3">
-          <label className="label">
-            <span className="label-text">Given code</span>
-          </label>
-          <textarea
-            name="given_code"
-            value={chapterData.given_code}
-            onChange={handleChange}
-            className="textarea-bordered textarea h-24"
-            placeholder="Bio"
-          ></textarea>
-        </div>
-
-        <div className="form-control w-1/3">
-          <label className="label">
-            <span className="label-text">Expected code</span>
-          </label>
-          <textarea
-            name="expected_code"
-            value={chapterData.expected_code}
-            onChange={handleChange}
-            className="textarea-bordered textarea h-24"
-            placeholder="Bio"
-          ></textarea>
-        </div>
-
-        <div className="mt-6 flex w-64 gap-4 pb-12">
-          <input type="submit" value="Submit" className="btn"></input>
-          <button
-            type="button"
-            onClick={handleDeleteUser}
-            className="btn btn-error"
-          >
-            Delete
-          </button>
-        </div>
-      </form>
-    </div>
+    )
   )
 }
 

@@ -9,11 +9,11 @@ export default function Home() {
   return (
     <>
       <section className="body-font h-[80vh] text-gray-600 md:h-[90vh]">
-        <div className="absolute flex h-[80vh] w-[100%] md:h-[90vh] ">
-          <div className="relative w-[calc(80vh*696/1606)] md:w-[calc(90vh*696/1606)]">
+        <div className="absolute flex h-[70vh] w-[100%] sm:h-[80vh] md:h-[90vh] ">
+          <div className="relative  hidden w-[calc(70vh*696/1606)] sm:block sm:w-[calc(80vh*696/1606)] md:w-[calc(90vh*696/1606)]">
             <Image src={iCharLeft} layout="fill" />
           </div>
-          <div className="relative ml-auto w-[calc(80vh*696/1606)] md:w-[calc(90vh*696/1606)]">
+          <div className="relative ml-auto w-[calc(70vh*696/1606)] sm:w-[calc(80vh*696/1606)] md:w-[calc(90vh*696/1606)]">
             <Image src={iCharRight} layout="fill" />
           </div>
         </div>

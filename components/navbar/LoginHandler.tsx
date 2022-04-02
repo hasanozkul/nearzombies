@@ -7,6 +7,7 @@ import SignIn from './SignIn'
 import iNearCoin from '/public/images/nav_coin_logo.png'
 import Image from 'next/image'
 import { NearCoin } from '../near_coin/NearCoin'
+import Link from 'next/link'
 
 type ShowState = {
   sign: boolean
@@ -20,7 +21,20 @@ export default function LoginHandler({ showState }: any) {
   const { show, setShow } = showState
   const [coin, setCoin] = useState(0)
   const database = getDatabase()
-
+  const [isEditor, setEditor] = useState(false)
+  useEffect(() => {
+    const user = auth.currentUser
+    if (user) {
+      const pathRef = ref(database, 'roles/editors/' + user.uid)
+      get(pathRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          setEditor(true)
+        } else {
+          setEditor(false)
+        }
+      })
+    }
+  }, [loggedIn])
   // button visibility handler
   const handleSignClick = (e: any) => {
     e.stopPropagation()
@@ -93,6 +107,11 @@ export default function LoginHandler({ showState }: any) {
             <Image src={iNearCoin} width="36px" height="36px" />
             <p className="ml-2 mt-0.5 font-mono text-xl">{coin.toFixed(2)}</p>
           </button>
+          {isEditor && (
+            <Link href={'/cms'}>
+              <button className="navbar_button">CMS</button>
+            </Link>
+          )}
           <button className="navbar_button" onClick={handleLogut}>
             Logout
           </button>
