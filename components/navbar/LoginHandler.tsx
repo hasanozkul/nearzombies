@@ -8,22 +8,19 @@ import iNearCoin from '/public/images/nav_coin_logo.png'
 import Image from 'next/image'
 import { NearCoin } from '../near_coin/NearCoin'
 import Link from 'next/link'
-
-type ShowState = {
-  sign: boolean
-  register: boolean
-  coin: boolean
-}
+import { onValue } from 'firebase/database'
 
 export default function LoginHandler({ showState }: any) {
   // default values
-  const [loggedIn, setLoggedIn] = useState(false)
   const { show, setShow } = showState
+  const [loggedIn, setLoggedIn] = useState(false)
   const [coin, setCoin] = useState(0)
   const database = getDatabase()
   const [isEditor, setEditor] = useState(false)
+
   useEffect(() => {
     const user = auth.currentUser
+
     if (user) {
       const pathRef = ref(database, 'roles/editors/' + user.uid)
       get(pathRef).then((snapshot) => {
@@ -33,33 +30,30 @@ export default function LoginHandler({ showState }: any) {
           setEditor(false)
         }
       })
+      return onValue(
+        ref(database, '/users/' + user.uid + '/coin'),
+        (snapshot) => {
+          if (snapshot.exists()) setCoin(snapshot.val())
+        }
+      )
     }
   }, [loggedIn])
+
   // button visibility handler
   const handleSignClick = (e: any) => {
     e.stopPropagation()
     setShow({ sign: !show.sign, register: false, coin: false })
   }
+
   const handleCoinClick = (e: any) => {
     e.stopPropagation()
     setShow({ ...show, coin: !show.coin })
   }
+
   const handleRegisterClick = (e: any) => {
     e.stopPropagation()
 
     setShow({ sign: false, register: !show.register, coin: false })
-  }
-
-  const setCoinOfUser = () => {
-    const user = auth.currentUser
-    if (user) {
-      const pathRef = ref(database, 'users/' + user.uid + '/coin')
-      get(pathRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          setCoin(snapshot.val())
-        }
-      })
-    }
   }
 
   const handleLogut = () => {
@@ -73,13 +67,12 @@ export default function LoginHandler({ showState }: any) {
       if (user) {
         setLoggedIn(true)
         setShow({ ...show, coin: false })
-        setCoinOfUser()
       } else {
         setLoggedIn(false)
         setShow({ ...show, register: false, sign: false })
       }
     })
-  }, [])
+  }, [auth])
 
   if (!loggedIn) {
     return (

@@ -1,16 +1,12 @@
-import Head from 'next/head'
-import Navbar from '../../../components/navbar/Navbar'
-import Footer from '../../../components/footer/Footer'
 import Image from 'next/image'
 import CodeEditor from '../../../components/CodeEditor'
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import iCustomCharacter from '/public/images/character_build/skin/skin_1.png'
 import { useRouter } from 'next/router'
-import next, { GetStaticPaths } from 'next'
 import Confetti from 'react-confetti'
 import { useWindowSize } from 'react-use'
 import { ref, getDatabase, get, child, onValue } from 'firebase/database'
+import { auth } from '../../../firebase/config'
 
 function Markdown() {
   return <section className="body-font text-gray-600"></section>
@@ -19,8 +15,9 @@ function Markdown() {
 function getChapterData() {
   const [data, setData] = useState<any>('')
   const [isLoading, setLoading] = useState(false)
-  let chapterData: string[] = []
   const router = useRouter()
+
+  let chapterData: string[] = []
   const { lang, course, chapter } = router.query
 
   const dbRef = ref(getDatabase())
@@ -38,8 +35,6 @@ function getChapterData() {
         .then((snapshot) => {
           if (snapshot.exists()) {
             setData(snapshot.val())
-
-            //console.log('data');
           } else {
           }
         })
@@ -52,17 +47,39 @@ function getChapterData() {
     // works but how?
   }, [router])
 
-  //console.log( data);
-
   if (isLoading) return 'loading'
-  //if (!data) console.log('wfTTTTTTT')
 
   return data
 }
 
 const Chapter = () => {
-  useEffect(() => {})
+  const router = useRouter()
+
+  useEffect(() => {
+    const user = auth.currentUser
+    if (!user) {
+      router.push('/EN/course')
+    }
+  }, [])
+
   const chapterData = getChapterData()
+  const database = getDatabase()
+  const [lastChapter, setLastChapter] = useState('')
+  useEffect(() => {
+    const user = auth.currentUser
+    const { lang, course, chapter } = router.query
+    if (user) {
+      return onValue(
+        ref(
+          database,
+          'users/' + user.uid + '/save/' + course + '/last_chapter'
+        ),
+        (snapshot) => {
+          if (snapshot.exists()) setLastChapter(snapshot.val())
+        }
+      )
+    }
+  }, [auth.currentUser])
 
   const [showCongrats, setShowCongrats] = useState(false)
 
@@ -75,7 +92,6 @@ const Chapter = () => {
     setShowCongrats(false)
   }
 
-  const router = useRouter()
   const [currLang, currCourse, currChapter] = useRouter()
     .asPath.substring(1)
     .split(/[/]/)
@@ -88,10 +104,13 @@ const Chapter = () => {
 
   return (
     <>
-      <section id="content" className="body-font mb-20 text-gray-600">
+      <section
+        id="content"
+        className="body-font mb-20 overflow-hidden text-gray-600"
+      >
         <div className=" mx-full py">
           <div className="m-4 flex place-content-center">
-            <div className="ml-10 w-full md:w-1/2">
+            <div className="ml-10 w-full md:w-[40%]">
               <div className="h-full rounded-[50px] bg-gray-100 p-8">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +129,7 @@ const Chapter = () => {
               </div>
             </div>
 
-            <div className="ml-10 w-full md:w-1/2">
+            <div className="ml-10 w-full md:w-[60%]">
               <Markdown />
               {/* TODO: Add dynamic links */}
               {chapterData.expected_code && (
@@ -118,6 +137,7 @@ const Chapter = () => {
                   showCongrats={setShowCongrats}
                   course={currCourse}
                   chapter={currChapter}
+                  lastChapter={lastChapter}
                   lang="typescript"
                   value={chapterData.given_code}
                   expectedValue={chapterData.expected_code}

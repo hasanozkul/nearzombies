@@ -38,7 +38,16 @@ module.exports = {
             transform: 'translateY(0) ',
           },
         },
-
+        fromLeft: {
+          '0%': {
+            opacity: 0,
+            transform: 'translateX(80%) ',
+          },
+          '100%': {
+            opacity: 1,
+            transform: 'translateX(0) ',
+          },
+        },
         withClipPath: {
           '0%': {
             clipPath: 'circle(3.5% at 100% 0)',
@@ -68,6 +77,7 @@ module.exports = {
       },
       animation: {
         fromTop: 'fromTop 1.2s ease',
+        fromLeft: 'fromLeft 0.5s ease-in-out',
         withClipPath: 'withClipPath 0.7s ease-in',
         withOpacity: 'withOpacity 1.2s ease-in',
         rotate: 'rotate 0.5s ease-in-out 1s',
