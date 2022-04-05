@@ -1,5 +1,3 @@
-import Navbar from '../../../components/navbar/Navbar'
-import Footer from '../../../components/footer/Footer'
 import Image from 'next/image'
 import iCrossBone from '/public/images/cross-bone.png'
 import Link from 'next/link'
@@ -7,7 +5,6 @@ import { useEffect, useState } from 'react'
 import { auth } from '../../../firebase/config'
 import { getDatabase, get, ref } from 'firebase/database'
 import { onAuthStateChanged } from 'firebase/auth'
-import ProgressBar from '@ramonak/react-progress-bar'
 import Character from '../../../components/character_build/Character'
 const database = getDatabase()
 
@@ -76,10 +73,10 @@ export default function Home() {
 
   return (
     <>
-      <section className="body-font bg-bg-courses bg-cover text-gray-600">
-        <div className="container mx-auto flex flex-wrap py-24">
-          <div className="flex w-full flex-wrap">
-            <div className="rounded-[20px] bg-gray-100 bg-opacity-90 py-6 px-6 md:w-1/2 lg:ml-48 lg:w-2/5 ">
+      <section className="body-font bg-bg-courses bg-cover text-gray-600 ">
+        <div className=" mx-auto flex flex-wrap md:py-12 xl:py-24 ">
+          <div className="mt-32 flex w-full flex-col md:mt-0 lg:flex-row lg:justify-center  ">
+            <div className="mx-auto w-[90%] rounded-[20px] bg-gray-100 bg-opacity-90 py-6 px-6 sm:w-3/4 lg:mx-2 lg:w-2/5  xl:w-1/3  ">
               <>
                 {' '}
                 {courseNames.map((name, i) => (
@@ -110,7 +107,7 @@ export default function Home() {
               </>
             </div>
 
-            <div className="mt-12 ml-4 rounded-lg object-cover object-center md:mt-0 md:w-1/2 lg:w-1/3">
+            <div className="mx-auto mt-8 w-[90%] rounded-lg object-cover object-center sm:w-3/4 lg:mx-2 lg:mt-0 lg:w-2/5  xl:w-1/3">
               <div className="relative h-full overflow-hidden rounded-[20px] bg-gray-100 bg-opacity-90 px-8 pt-8 pb-16 text-center">
                 <div className="my-0 mx-auto mb-5 h-[16rem] p-0 ">
                   {/* Custom Character*/}
@@ -128,7 +125,8 @@ export default function Home() {
                     '/EN/course_' +
                     (descIdx + 1) +
                     '/chapter_' +
-                    (Number(completions[descIdx]) + 1)
+                    (Number(completions[descIdx]) +
+                      (Number(completions[descIdx]) === 5 ? 0 : 1))
                   }
                 >
                   <button className="itmes-center inline-flex bg-bone-button bg-contain bg-center bg-no-repeat py-4 px-20 text-lg text-black  transition focus:translate-y-1 ">
@@ -137,8 +135,6 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-
-            <div className="mt-12 ml-4 rounded-lg object-cover object-center md:mt-0 md:w-1/2 lg:w-1/3"></div>
           </div>
         </div>
         <div className="h-32 bg-bg-footer bg-cover bg-bottom bg-no-repeat" />

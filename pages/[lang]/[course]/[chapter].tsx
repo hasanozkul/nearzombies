@@ -12,43 +12,53 @@ function Markdown() {
   return <section className="body-font text-gray-600"></section>
 }
 
+/**
+ * Get the chapter data from the database and set it to the state
+ * @returns The chapter data.
+ */
 function getChapterData() {
   const [data, setData] = useState<any>('')
   const [isLoading, setLoading] = useState(false)
   const router = useRouter()
 
-  let chapterData: string[] = []
   const { lang, course, chapter } = router.query
 
-  const dbRef = ref(getDatabase())
-
+  const database = getDatabase()
   useEffect(() => {
+    const user = auth.currentUser
     setLoading(true)
-
-    async function test() {
-      await get(
-        child(
-          dbRef,
-          'courses/' + lang + '/' + course + '/chapters/' + chapter + '/'
-        )
+    const courseChapterPath = ref(
+      database,
+      'courses/' + lang + '/' + course + '/chapters/' + chapter + '/'
+    )
+    if (user) {
+      const userWrittenCodePath = ref(
+        database,
+        'users/' + user.uid + '/save/' + course + '/' + chapter + '/writtencode'
       )
-        .then((snapshot) => {
+      get(userWrittenCodePath).then((snapshot) => {
+        let val = ''
+        if (snapshot.exists()) {
+          val = snapshot.val()
+        }
+        get(courseChapterPath).then((snapshot) => {
           if (snapshot.exists()) {
-            setData(snapshot.val())
-          } else {
+            if (!val) setData(snapshot.val())
+            else setData({ ...snapshot.val(), given_code: val })
+            setLoading(false)
           }
         })
-        .catch((error) => {
-          console.error(error)
-        })
-      setLoading(false)
+      })
+    } else {
+      get(courseChapterPath).then((snapshot) => {
+        if (snapshot.exists()) {
+          setData(snapshot.val())
+          setLoading(false)
+        }
+      })
     }
-    test().then((x) => console.log(x))
-    // works but how?
   }, [router])
-
   if (isLoading) return 'loading'
-
   return data
 }
 
@@ -106,11 +116,11 @@ const Chapter = () => {
     <>
       <section
         id="content"
-        className="body-font mb-20 overflow-hidden text-gray-600"
+        className="body-font mb-20 mt-20 overflow-hidden text-gray-600 md:mt-0 "
       >
         <div className=" mx-full py">
-          <div className="m-4 flex place-content-center">
-            <div className="ml-10 w-full md:w-[40%]">
+          <div className="m-4 flex flex-col place-content-center xl:flex-row">
+            <div className="w-full xl:ml-10 xl:w-[40%]">
               <div className="h-full rounded-[50px] bg-gray-100 p-8">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +139,7 @@ const Chapter = () => {
               </div>
             </div>
 
-            <div className="ml-10 w-full md:w-[60%]">
+            <div className="xl-mt-0  w-full xl:ml-10 xl:w-[60%]">
               <Markdown />
               {/* TODO: Add dynamic links */}
               {chapterData.expected_code && (

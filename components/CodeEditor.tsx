@@ -11,7 +11,7 @@
 |
 */
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Editor, { DiffEditor } from '@monaco-editor/react'
 import * as monaco from 'monaco-editor'
 import { auth } from '../firebase/config'
@@ -59,7 +59,7 @@ function CodeEditor(props: any) {
   const [remainingLife, setRemainingLife] = useState<Number>(3)
   const [showAnswer, setShowAnswer] = useState<boolean>(false)
   const [showSuccess, setShowSuccess] = useState<boolean>(false)
-
+  const [showSolved, setShowSolved] = useState(false)
   /* It's a function that shows an error message when the user submit the code and it's wrong. */
 
   function handleEditorDidMount(
@@ -89,15 +89,21 @@ function CodeEditor(props: any) {
     }
   }
 
-  function sendSaveDataToFirebase() {
+  function sendSaveDataToFirebase(value: string) {
     const user = auth.currentUser
     if (user) {
-      const userChapterSavePath = ref(
+      const userChapterStatusPath = ref(
         database,
-        'users/' + user.uid + '/save/' + props.course + '/' + props.chapter
+        'users/' +
+          user.uid +
+          '/save/' +
+          props.course +
+          '/' +
+          props.chapter +
+          '/status'
       )
       const userCoinPath = ref(database, 'users/' + user.uid + '/coin/')
-      get(userChapterSavePath).then((snapshot) => {
+      get(userChapterStatusPath).then((snapshot) => {
         if (!snapshot.exists()) {
           get(userCoinPath).then((snapshot) => {
             let val = 0
@@ -106,11 +112,11 @@ function CodeEditor(props: any) {
               val = snapshot.val()
             }
             if (remainingLife > 0) {
-              set(userChapterSavePath, 'completed')
+              set(userChapterStatusPath, 'completed')
 
               set(userCoinPath, val + 10)
             } else {
-              set(userChapterSavePath, 'answer_shown')
+              set(userChapterStatusPath, 'answer_shown')
             }
             const lastRef = ref(
               database,
@@ -119,6 +125,17 @@ function CodeEditor(props: any) {
             set(lastRef, props.chapter.replace(/\D/g, ''))
           })
         }
+        const userChapterWrittenCodePath = ref(
+          database,
+          'users/' +
+            user.uid +
+            '/save/' +
+            props.course +
+            '/' +
+            props.chapter +
+            '/writtencode'
+        )
+        set(userChapterWrittenCodePath, value)
       })
     }
   }
@@ -130,12 +147,13 @@ function CodeEditor(props: any) {
     if (openDiff) {
       value = getModifiedValue()
     } else value = getValue()
+    let sendValue = value
     value = value.replace(regex, '')
     expected = expected.replace(regex, '')
 
     if (value === expected) {
       setShowError(false)
-      sendSaveDataToFirebase()
+      sendSaveDataToFirebase(sendValue)
       if (chapter === 'chapter_5') props.showCongrats(true)
       else {
         setShowSuccess(true)
@@ -156,6 +174,59 @@ function CodeEditor(props: any) {
     }
   }
 
+  useEffect(() => {
+    const user = auth.currentUser
+    if (user) {
+      const userCourseChapterRemainingLifePath = ref(
+        database,
+        'users/' +
+          user.uid +
+          '/save/' +
+          course +
+          '/' +
+          chapter +
+          '/remainingLife'
+      )
+      get(userCourseChapterRemainingLifePath).then((snapshot) => {
+        if (snapshot.exists()) {
+          setRemainingLife(snapshot.val())
+        } else {
+          set(userCourseChapterRemainingLifePath, 3)
+        }
+      })
+      const userSolvedCoursePath = ref(
+        database,
+        'users/' + user.uid + '/save/' + course + '/' + chapter + '/status'
+      )
+      get(userSolvedCoursePath).then((snapshot) => {
+        if (snapshot.exists()) {
+          console.log(snapshot.val())
+
+          setShowSolved(true)
+        } else {
+          setShowSolved(false)
+        }
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    const user = auth.currentUser
+    if (user) {
+      const userCourseChapterRemainingLifePath = ref(
+        database,
+        'users/' +
+          user.uid +
+          '/save/' +
+          course +
+          '/' +
+          chapter +
+          '/remainingLife'
+      )
+      set(userCourseChapterRemainingLifePath, remainingLife)
+    }
+  }, [remainingLife])
+
   function handleShowAnswerClick() {
     setOpenDiff(!openDiff)
   }
@@ -168,7 +239,7 @@ function CodeEditor(props: any) {
   return (
     <div className="relative ">
       {auth.currentUser && (
-        <div className="mb-5 flex ">
+        <div className="mb-5 mt-5 flex xl:mt-0 ">
           {chapterNum > 1 && (
             <Link
               href={
@@ -182,17 +253,25 @@ function CodeEditor(props: any) {
             >
               <button
                 onClick={handleResetCode.bind(null, setValue)}
-                className="mr-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-200 py-2 text-lg text-gray-500 hover:bg-gray-300 focus:outline-none"
+                className="mr-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-200 p-1 text-sm  text-gray-500 hover:bg-gray-300 focus:outline-none sm:text-base md:p-3 md:text-xl"
               >
                 Previous Chapter
               </button>
             </Link>
           )}
           {showSuccess && (
-            <div className="alert mx-2 w-full animate-withOpacity place-content-center bg-emerald-600 p-2 text-xl text-white shadow-lg">
+            <div className="alert mx-2 w-full animate-withOpacity place-content-center bg-emerald-600 p-1 text-sm text-white shadow-lg  sm:text-base md:p-3 md:text-xl">
               <div>
                 <CheckCircleIcon className="w-8" />
                 <span>Great job! You can move on to the next chapter.</span>
+              </div>
+            </div>
+          )}
+          {showSolved && !showSuccess && (
+            <div className="alert mx-2 w-full animate-withOpacity place-content-center bg-gray-200  p-1 text-sm text-gray-500 text-white shadow-lg  sm:text-base md:p-3 md:text-xl">
+              <div>
+                <CheckCircleIcon className="w-8" />
+                <span>You already solved this chapter!</span>
               </div>
             </div>
           )}
@@ -212,7 +291,7 @@ function CodeEditor(props: any) {
                 <button
                   onClick={handleResetCode.bind(null, setValue)}
                   className={
-                    'ml-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-200 py-3 text-lg text-gray-500 hover:bg-gray-300 focus:outline-none  ' +
+                    'ml-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-200 py-3  text-sm text-gray-500 hover:bg-gray-300 focus:outline-none sm:text-base md:text-xl  ' +
                     (showSuccess ? 'animate-bounce' : '')
                   }
                 >
@@ -245,22 +324,22 @@ function CodeEditor(props: any) {
 
       <div className="mt-5 flex">
         <div className="flex flex-grow flex-wrap">
-          <div className="mr-4 inline-flex w-1/12 place-content-center items-center rounded-xl bg-gray-200 py-2 text-xl">
-            <HeartIcon className="w-10 text-red-500" />
-            <div className="ml-1 w-2">
+          <div className="mr-0 inline-flex w-1/6 max-w-fit place-content-center items-center rounded-xl bg-gray-200 px-1 py-2 text-sm  sm:mr-4 sm:text-lg md:text-xl">
+            <HeartIcon className="w-2/3 max-w-[2.5rem]  text-red-500 sm:w-10" />
+            <div className="ml-1 w-1/3">
               <a>{remainingLife}</a>
             </div>
           </div>
           <button
             onClick={handleSubmitClick}
-            className="mr-auto inline-flex w-1/3 place-content-center items-center rounded-xl bg-emerald-600 py-2 text-lg text-white hover:bg-emerald-700 focus:outline-none"
+            className="mr-auto inline-flex w-1/3 place-content-center items-center rounded-xl bg-emerald-600 py-2 text-sm text-white hover:bg-emerald-700 focus:outline-none sm:text-lg"
           >
             Submit
           </button>
 
           <button
             onClick={handleResetCode.bind(null, setValue)}
-            className="mr-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-200 py-2 text-lg text-gray-500 hover:bg-gray-300 focus:outline-none"
+            className="mr-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-200 py-2 text-sm text-gray-500 hover:bg-gray-300 focus:outline-none sm:text-lg"
           >
             Reset
           </button>
@@ -268,7 +347,7 @@ function CodeEditor(props: any) {
           {showAnswer ? (
             <button
               onClick={handleShowAnswerClick}
-              className="mr-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-500 py-2 text-lg text-white hover:bg-gray-600 focus:outline-none"
+              className="mr-auto inline-flex w-1/4 place-content-center items-center rounded-xl bg-gray-500 py-2 text-sm text-white hover:bg-gray-600 focus:outline-none sm:text-lg"
             >
               {openDiff ? 'Hide' : 'Show'} Answer
             </button>
@@ -279,9 +358,9 @@ function CodeEditor(props: any) {
       </div>
 
       {showError && (
-        <div className="alert alert-error absolute right-0 top-5 mt-4 w-1/2 animate-fromLeft place-content-center shadow-lg">
+        <div className="alert alert-error absolute right-0 top-2 w-[70%] animate-fromLeft place-content-center p-2 text-sm  shadow-lg sm:p-4 sm:text-lg md:top-8 md:w-1/2">
           <div>
-            <XCircleIcon className="w-8" />
+            <XCircleIcon className="w-6 md:w-8" />
             <span>Upps... Something went wrong </span>
           </div>
         </div>
